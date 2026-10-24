@@ -1,3 +1,4 @@
+import { mountAudiencePanel } from './ui/AudiencePanel';
 import Phaser from 'phaser';
 import { GAME } from './config';
 import { BootScene } from './scenes/BootScene';
@@ -44,6 +45,8 @@ const config: Phaser.Types.Core.GameConfig = {
 };
 
 const game = new Phaser.Game(config);
+const disposeAudiencePanel = mountAudiencePanel();
+game.events.once(Phaser.Core.Events.DESTROY, disposeAudiencePanel);
 
 // Debug: expor game globalmente para testes
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

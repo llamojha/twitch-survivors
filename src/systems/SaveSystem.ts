@@ -1,7 +1,7 @@
 // ── Save System — localStorage persistence for meta-progression ─────────
 // Module singleton pattern: module-level state + exported functions.
 
-const STORAGE_KEY = 'poke-survivors-save';
+const STORAGE_KEY = 'twitch-survivors-save';
 const CURRENT_VERSION = 2;
 const POKEDEX_TOTAL = 47;
 
@@ -405,7 +405,7 @@ export function downloadSaveFile(): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `poke-survivors-save-${Date.now()}.txt`;
+  a.download = `twitch-survivors-save-${Date.now()}.txt`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

@@ -1,7 +1,7 @@
 {
-  "name": "poke-survivors",
+  "name": "twitch-survivors",
   "version": "0.1.0",
-  "description": "Pokémon Vampire Survivors - Fan Game",
+  "description": "Twitch Survivors — audience-driven survivor game (migration in progress)",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,17 +12,19 @@
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
     "ralph": "bash scripts/ralph/ralph.sh --tool claude",
-    "ralph:20": "bash scripts/ralph/ralph.sh --tool claude 20"
+    "ralph:20": "bash scripts/ralph/ralph.sh --tool claude 20",
+    "typecheck": "tsc --noEmit",
+    "test": "node scripts/test-audience.mjs"
   },
   "dependencies": {
-    "@tauri-apps/plugin-shell": "^2.3.5",
-    "phaser": "^3.90.0"
+    "@tauri-apps/plugin-shell": "2.3.5",
+    "phaser": "3.90.0"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.10.0",
-    "playwright": "^1.58.2",
-    "sharp": "^0.34.5",
-    "typescript": "^5.7.2",
-    "vite": "^6.3.1"
+    "@tauri-apps/cli": "2.10.0",
+    "playwright": "1.58.2",
+    "sharp": "0.35.5",
+    "typescript": "5.9.3",
+    "vite": "6.4.5"
   }
 }

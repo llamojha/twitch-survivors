@@ -1,3 +1,4 @@
+import { audienceSession } from '../audience/AudienceSession'
 import Phaser from "phaser"
 import { GAME, STARTERS, SPAWN, XP_GEM, ENEMIES, DIFFICULTY } from "../config"
 import type { StarterConfig } from "../config"
@@ -100,6 +101,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   create(): void {
+    audienceSession.reset()
     // ── Reset state ─────────────────────────────────────────────────
     this.isPaused = false
     this.gameTime = 0

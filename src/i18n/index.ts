@@ -11,7 +11,7 @@ import { en } from './en';
 export type Language = 'pt' | 'en';
 type TranslationMap = Record<string, string>;
 
-const STORAGE_KEY = 'poke-language';
+const STORAGE_KEY = 'twitch-survivors-language';
 
 const LANGS: Record<Language, TranslationMap> = { pt, en };
 
