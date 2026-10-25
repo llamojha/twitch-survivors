@@ -38,6 +38,19 @@ export function getViewerAttackPhase(viewerId: string, cooldownMs: number): numb
   return Math.abs(hash >>> 0) % Math.max(1, Math.floor(cooldownMs));
 }
 
+/** Anchor a companion's cadence to when it first joins the active scene. */
+export function getInitialAttackTime(recruitedAtMs: number, viewerId: string | null, cooldownMs: number): number {
+  const delay = viewerId === null ? Math.max(1, Math.floor(cooldownMs)) : getViewerAttackPhase(viewerId, cooldownMs);
+  return recruitedAtMs + delay;
+}
+
+/** Advance from the existing cadence without synchronizing attacks to the current frame. */
+export function getNextAttackTime(scheduledAtMs: number, nowMs: number, cooldownMs: number): number {
+  const cooldown = Math.max(1, Math.floor(cooldownMs));
+  const elapsedIntervals = Math.floor(Math.max(0, nowMs - scheduledAtMs) / cooldown) + 1;
+  return scheduledAtMs + elapsedIntervals * cooldown;
+}
+
 /** Per-shot state prevents repeated overlap frames from damaging the same target. */
 export interface CompanionShotHits { remaining: number; targets: Set<object> }
 export function createCompanionShotHits(role: CompanionRole): CompanionShotHits {

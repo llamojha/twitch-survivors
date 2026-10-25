@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { SOLO_ATTACK, VIEWER_ROLES, pickCompanionRole, createCompanionShotHits, registerCompanionHit,
-  getViewerAttackPhase } from '../src/audience/CompanionRoles';
+  getInitialAttackTime, getNextAttackTime, getViewerAttackPhase } from '../src/audience/CompanionRoles';
 
 test('injected random selects every immutable viewer role without modifying solo behavior', () => {
   assert.deepEqual([0, 0.34, 0.99].map(value => pickCompanionRole(() => value).id), ['scout', 'volley', 'piercer']);
@@ -16,6 +16,25 @@ test('viewer attack phases are stable and stay within the role cooldown', () => 
   assert.deepEqual(values, ['alice', 'bob', 'charlie'].map(id => getViewerAttackPhase(id, 1000)));
   assert.ok(values.every(value => value >= 0 && value < 1000));
   assert.ok(new Set(values).size > 1);
+});
+
+test('late recruits keep their viewer phase across future cooldowns', () => {
+  const recruitedAt = 10_000;
+  const cooldown = 1000;
+  const aliceInitial = getInitialAttackTime(recruitedAt, 'alice', cooldown);
+  const bobInitial = getInitialAttackTime(recruitedAt, 'bob', cooldown);
+
+  assert.ok(aliceInitial >= recruitedAt && aliceInitial < recruitedAt + cooldown);
+  assert.ok(bobInitial >= recruitedAt && bobInitial < recruitedAt + cooldown);
+  assert.notEqual(aliceInitial, bobInitial);
+
+  const aliceNext = getNextAttackTime(aliceInitial, 20_000, cooldown);
+  const bobNext = getNextAttackTime(bobInitial, 20_000, cooldown);
+  assert.ok(aliceNext > 20_000);
+  assert.ok(bobNext > 20_000);
+  assert.equal((aliceNext - aliceInitial) % cooldown, 0);
+  assert.equal((bobNext - bobInitial) % cooldown, 0);
+  assert.notEqual(aliceNext, bobNext);
 });
 
 test('roles produce quick single fire, a symmetric spread and a piercing shot', () => {

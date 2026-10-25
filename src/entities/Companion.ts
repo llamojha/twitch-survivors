@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import type { ViewerIdentity } from '../audience/AudienceProvider';
-import { SOLO_ATTACK, createCompanionShotHits, getViewerAttackPhase, type CompanionRole } from '../audience/CompanionRoles';
+import { SOLO_ATTACK, createCompanionShotHits, getInitialAttackTime, getNextAttackTime, type CompanionRole } from '../audience/CompanionRoles';
 import type { Player } from './Player';
 import { getSpatialGrid } from '../systems/SpatialHashGrid';
 
@@ -22,7 +22,7 @@ const QUERY_RANGE = 300;
 export class Companion extends Phaser.Physics.Arcade.Sprite {
   private orbitAngle: number;
   private readonly orbitSpeed: number = 1.5;
-  private lastAttackTime: number = 0;
+  private nextAttackTime: number | null = null;
   private readonly baseDamage: number = 5;
   private readonly companionKey: string;
   private damageMultiplier: number = 1.0;
@@ -50,8 +50,6 @@ export class Companion extends Phaser.Physics.Arcade.Sprite {
     }
     this.companionKey = key;
     this.orbitAngle = orbitOffset;
-    if (viewer) this.lastAttackTime = -getViewerAttackPhase(viewer.id, role.cooldownMs);
-
     this.setScale(0.6);
     this.setDepth(11);
 
@@ -100,14 +98,19 @@ export class Companion extends Phaser.Physics.Arcade.Sprite {
       this.shadow.setPosition(this.x, this.y + 6);
     }
 
-    // Tenta atacar se cooldown permite
-    if (time - this.lastAttackTime >= this.role.cooldownMs) {
-      this.tryAttack(time, player);
+    // Anchor the cadence when this companion first becomes active. Advancing from
+    // that schedule preserves each viewer's phase even after missed frames.
+    if (this.nextAttackTime === null) {
+      this.nextAttackTime = getInitialAttackTime(time, this.viewer?.id ?? null, this.role.cooldownMs);
+    }
+    if (time >= this.nextAttackTime) {
+      this.tryAttack(player);
+      this.nextAttackTime = getNextAttackTime(this.nextAttackTime, time, this.role.cooldownMs);
     }
   }
 
   // ── Tentativa de ataque ────────────────────────────────────────────
-  private tryAttack(time: number, player: Player): void {
+  private tryAttack(player: Player): void {
     const grid = getSpatialGrid();
     if (!grid) return;
 
@@ -115,8 +118,6 @@ export class Companion extends Phaser.Physics.Arcade.Sprite {
     if (!nearest || !nearest.active) return;
 
     const damage = this.computeDamage(player);
-    this.lastAttackTime = time;
-
     // Emite evento para CompanionSystem disparar o projétil
     this.scene.events.emit(
       'companion-fire',
