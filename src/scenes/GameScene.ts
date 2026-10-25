@@ -1,6 +1,9 @@
+import { audiencePerformance } from "../audience/PerformanceMonitor"
+import { localRunControls } from "../audience/LocalRunControls"
+import { RunLifecycle } from "../audience/RunLifecycle"
 import { audienceSession } from '../audience/AudienceSession'
 import Phaser from "phaser"
-import { GAME, STARTERS, SPAWN, XP_GEM, ENEMIES, DIFFICULTY } from "../config"
+import { GAME, STARTERS, SPAWN, XP_GEM, ENEMIES, DIFFICULTY, STAGES } from "../config"
 import type { StarterConfig } from "../config"
 import type { DevConfig, Difficulty, EnemyConfig } from "../types"
 import { Player } from "../entities/Player"
@@ -34,6 +37,7 @@ import { initMusicManager, getMusicManager } from "../audio/MusicManager"
 import { initCompanionSystem, getCompanionSystem } from "../systems/CompanionSystem"
 import {
   initSaveSystem,
+  setRunSimulation,
   addCoins,
   updateRecord,
   accumulateRunStats,
@@ -59,6 +63,8 @@ export class GameScene extends Phaser.Scene {
   private joystick: VirtualJoystick | null = null
   private debugMode = false
   private runSaved = false
+  private lifecycle = new RunLifecycle()
+  private simulationRun = false
   private aimCrosshair!: Phaser.GameObjects.Triangle
   private onBeforeUnload: (() => void) | null = null
   private starterKey = "charmander"
@@ -82,6 +88,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   init(data?: {
+    simulationRun?: boolean
     debugMode?: boolean
     starterKey?: string
     devConfig?: DevConfig
@@ -90,6 +97,7 @@ export class GameScene extends Phaser.Scene {
     mapId?: string | null
     stageId?: string
   }): void {
+    this.simulationRun = data?.simulationRun ?? false
     this.debugMode = data?.debugMode ?? false
     this.devConfig = data?.devConfig
     this.difficulty = data?.difficulty ?? "hard"
@@ -101,6 +109,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   create(): void {
+    this.lifecycle = new RunLifecycle(this.simulationRun || this.debugMode || !!this.devConfig)
+    this.time.paused = false
+    audiencePerformance.reset()
     audienceSession.reset()
     // ── Reset state ─────────────────────────────────────────────────
     this.isPaused = false
@@ -183,6 +194,7 @@ export class GameScene extends Phaser.Scene {
 
     // ── Persistent systems ───────────────────────────────────────────
     initSaveSystem()
+    setRunSimulation(this.lifecycle.isSimulation())
     initStatsTracker()
     setRunRecordDamage((attackKey, amount) => getStatsTracker().recordDamage(attackKey, amount))
     initComboSystem()
@@ -328,16 +340,32 @@ export class GameScene extends Phaser.Scene {
       this.upgradeSystem.triggerLevelUp()
     })
 
+    const unbindAudience = audienceSession.bindRuntime({
+      level: () => this.player.stats.level,
+      running: () => this.scene.isActive() && !this.isPaused && this.player.stats.hp > 0,
+      simulateLevel: () => {
+        this.markSimulation()
+        this.player.addXp(Math.ceil((this.player.stats.xpToNext - this.player.stats.xp) / this.player.stats.xpMultiplier))
+        this.events.emit("request-level-up")
+        this.emitStats()
+      },
+    })
+    this.events.once("shutdown", unbindAudience)
+    this.events.once(Phaser.Scenes.Events.CREATE, () => audienceSession.refreshRuntime())
+
     this.events.on("pause-game", () => {
       this.isPaused = true
+      audienceSession.refreshRuntime()
       this.physics.pause()
       this.time.paused = true
     })
 
     this.events.on("resume-game", () => {
+      if (this.lifecycle.isFinished()) return
       this.isPaused = false
       this.physics.resume()
       this.time.paused = false
+      audienceSession.refreshRuntime()
     })
 
     this.events.on("player-died", () => {
@@ -511,7 +539,7 @@ export class GameScene extends Phaser.Scene {
     // ── F5 save guard — salva coins ao recarregar a página ─────────
     this.runSaved = false
     this.onBeforeUnload = (): void => {
-      if (this.runSaved) return
+      if (this.runSaved || !this.lifecycle.canPersist()) return
       this.runSaved = true
       const collectedCoins = this.pickupSystem.getRunCoins()
       if (collectedCoins > 0) addCoins(collectedCoins)
@@ -524,100 +552,38 @@ export class GameScene extends Phaser.Scene {
       }
     })
 
-    // ── Phase-complete: todos os bosses derrotados ────────────────
-    this.events.on("phase-complete", () => {
-      this.isPaused = true
-      this.physics.pause()
-      this.time.paused = true
+    this.events.on("phase-complete", () => this.finishRun("victory"))
 
-      const tracker = getStatsTracker()
-      tracker.setLevel(this.player.stats.level)
-      tracker.setForm(this.player.stats.form)
-      tracker.setAttacks(
-        this.player
-          .getAllAttacks()
-          .map((a) => ({ type: a.type, level: a.level })),
-      )
-      tracker.setItems(this.player.getHeldItems())
-
-      const runStats = tracker.getRunStats()
-      const timeSeconds = Math.floor(this.gameTime / 1000)
-      const collectedCoins = this.pickupSystem.getRunCoins()
-      const bonusCoins = Math.floor(
-        timeSeconds * 0.5 + runStats.levelReached * 5,
-      )
-      const diffConfig = DIFFICULTY[this.difficulty]
-      const coinsEarned = Math.floor(
-        (collectedCoins + bonusCoins) * diffConfig.coinMultiplier,
-      )
-
-      // Salvar coins imediatamente (stats serão salvos no game over ou menu)
-      addCoins(coinsEarned)
-      this.pickupSystem.resetRunCoins()
-
-      // Unlock Squirtle ao completar a primeira fase
-      const newlyUnlocked = unlockStarter('squirtle')
-
-      const bestCombo = getComboSystem().getBestCombo()
-      const formName =
-        (this.starterConfig.forms ?? []).find(
-          (f) => f.form === this.player.stats.form,
-        )?.name ?? this.starterConfig.name
-
-      this.scene.get("UIScene").events.emit("show-victory", {
-        level: this.player.stats.level,
-        kills: this.player.stats.kills,
-        time: timeSeconds,
-        runStats,
-        coinsEarned,
-        bestCombo,
-        starterKey: this.starterKey,
-        formName,
-        unlockedSquirtle: newlyUnlocked,
-      })
+    const unbindLocal = localRunControls.bind({
+      state: () => ({ simulation: this.lifecycle.isSimulation(), finished: this.lifecycle.isFinished(), stage: this.stageId,
+        bossIndex: this.spawnSystem.getBossProgress().index, bossTotal: this.spawnSystem.getBossProgress().total }),
+      markSimulation: () => this.markSimulation(),
+      end: outcome => { this.markSimulation(); this.finishRun(outcome) },
+      restart: stage => this.scene.restart({ starterKey: this.starterKey, difficulty: this.difficulty,
+        tileThemeId: this.tileThemeId, stageId: stage && STAGES[stage] ? stage : this.stageId, simulationRun: true }),
+      reward: () => { if (!this.isPaused) { this.markSimulation(); this.events.emit("pause-game");
+        if (!this.upgradeSystem.applyGachaReward("rareCandy")) this.events.emit("resume-game") } },
+      nextBoss: () => { if (this.isPaused) return false; this.markSimulation();
+        // Boss-queue validation exercises real kills and phase completion without an incidental test-run death.
+        this.player.setInvincible(this.time.now + 60 * 60 * 1000)
+        return this.spawnSystem.advanceToNextBossForSimulation() },
     })
-
-    // ── Victory quit: jogador sai pelo menu principal após vitória ──
-    this.scene.get("UIScene").events.on("victory-quit", () => {
-      // Salvar stats finais antes de sair
-      const tracker = getStatsTracker()
-      const runStats = tracker.getRunStats()
-      const timeSeconds = Math.floor(this.gameTime / 1000)
-      accumulateRunStats({
-        kills: runStats.totalKills,
-        bossesDefeated: runStats.bossesDefeated.length,
-        damageDealt: runStats.totalDamageDealt,
-        coinsEarned: 0,
-        timePlayed: timeSeconds,
-        distance: runStats.distanceTraveled,
-        berries: runStats.berriesCollected,
-        xp: runStats.xpCollected,
-        combo: getComboSystem().getBestCombo(),
-        starterKey: this.starterKey,
-        formName:
-          (this.starterConfig.forms ?? []).find(
-            (f) => f.form === this.player.stats.form,
-          )?.name ?? this.starterConfig.name,
-        damageByAttack: runStats.damageByAttack,
-      })
-      const formName =
-        (this.starterConfig.forms ?? []).find(
-          (f) => f.form === this.player.stats.form,
-        )?.name ?? this.starterConfig.name
-      saveLastRun({
-        starterKey: this.starterKey,
-        formName,
-        level: runStats.levelReached,
-        kills: runStats.totalKills,
-        time: timeSeconds,
-        coinsEarned: 0,
-        difficulty: this.difficulty,
-        date: Date.now(),
-      })
-      getMusicManager()?.fadeOut(1000)
+    this.events.once("shutdown", () => {
+      unbindLocal()
+      setRunSimulation(false)
+      this.upgradeSystem.destroy()
+      this.scale.off("resize", applyZoom)
       getEventSystem().destroy()
+      getMusicManager()?.fadeOut(500)
       clearSpores()
       clearDeathClouds()
+      this.scene.get("UIScene").events.removeAllListeners("companion-selected")
+      // Phaser preserves custom event listeners on restart; clear run-owned handlers.
+      for (const event of ["upgrade-selected", "reroll-requested", "gacha-reward", "request-level-up",
+        "pause-game", "resume-game", "player-died", "stats-refresh", "pokeball-bomb", "wave-changed",
+        "friend-ball-collected", "leech-seed-heal", "player-heal", "phase-complete",
+        "player-damage", "passive-proc", "enemy-explosion", "passive-on-kill", "gacha-reward-applied", "game-over", "stats-update", "level-up", "pokemon-evolved"])
+        this.events.removeAllListeners(event)
     })
 
     // ── Initial state ───────────────────────────────────────────────
@@ -627,6 +593,7 @@ export class GameScene extends Phaser.Scene {
     // ── Debug mode: show scenario menu ──────────────────────────────
     if (this.debugMode && !this.devConfig) {
       this.isPaused = true
+      audienceSession.refreshRuntime()
       this.physics.pause()
       this.time.delayedCall(100, () => this.debugSystem.showMenu())
     }
@@ -701,6 +668,9 @@ export class GameScene extends Phaser.Scene {
 
     // Phase 4: Companion System
     getCompanionSystem()?.update(time, delta)
+    const audienceMetrics = getCompanionSystem()?.getAudienceMetrics()
+    audiencePerformance.record(delta, audienceSession.getActiveViewers().length, this.enemyGroup.countActive(true),
+      audienceMetrics?.activeProjectiles, audienceMetrics?.droppedShots, audienceMetrics?.visibleLabels)
 
     // XP magnetism (gems persist forever — disable body when far for perf)
     const gemChildren = this.xpGems.getChildren()
@@ -758,11 +728,23 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  private gameOver(): void {
+  private markSimulation(): void {
+    this.lifecycle.markSimulation()
+    setRunSimulation(true)
+  }
+
+  private gameOver(): void { this.finishRun("defeat") }
+
+  private finishRun(outcome: "defeat" | "victory"): void {
+    if (!this.lifecycle.finish()) return
+    this.runSaved = true
+    audienceSession.finishRun(outcome)
+    this.time.paused = true
     this.isPaused = true
+    audienceSession.refreshRuntime()
     this.physics.pause()
     clearAllStatusOverlays(this.player)
-    SoundManager.playGameOver()
+    if (outcome === "defeat") SoundManager.playGameOver()
 
     // Remove F5 save handler (coins serão salvos abaixo)
     if (this.onBeforeUnload) {
@@ -791,8 +773,10 @@ export class GameScene extends Phaser.Scene {
     const coinsEarned = Math.floor((collectedCoins + bonusCoins) * diffConfig.coinMultiplier)
 
     // ── Save to persistent storage ─────────────────────────────────
+    if (this.lifecycle.canPersist()) {
     addCoins(coinsEarned)
     accumulateRunStats({
+      outcome,
       kills: runStats.totalKills,
       bossesDefeated: runStats.bossesDefeated.length,
       damageDealt: runStats.totalDamageDealt,
@@ -810,6 +794,7 @@ export class GameScene extends Phaser.Scene {
     const formName = (this.starterConfig.forms ?? []).find((f) => f.form === this.player.stats.form)
       ?.name ?? this.starterConfig.name
     saveLastRun({
+      outcome,
       starterKey: this.starterKey,
       formName,
       level: runStats.levelReached,
@@ -819,10 +804,12 @@ export class GameScene extends Phaser.Scene {
       difficulty: this.difficulty,
       date: Date.now(),
     })
+    }
+    const formName = (this.starterConfig.forms ?? []).find(f => f.form === this.player.stats.form)?.name ?? this.starterConfig.name
     const newRecords = {
-      time: updateRecord("bestTime", timeSeconds),
-      kills: updateRecord("bestKills", runStats.totalKills),
-      level: updateRecord("bestLevel", runStats.levelReached),
+      time: this.lifecycle.canPersist() && updateRecord("bestTime", timeSeconds),
+      kills: this.lifecycle.canPersist() && updateRecord("bestKills", runStats.totalKills),
+      level: this.lifecycle.canPersist() && updateRecord("bestLevel", runStats.levelReached),
     }
 
     // ── Combo stats ────────────────────────────────────────────────
@@ -834,17 +821,20 @@ export class GameScene extends Phaser.Scene {
     clearSpores()
     clearDeathClouds()
 
-    this.events.emit("game-over", {
+    const result = {
       level: this.player.stats.level,
       kills: this.player.stats.kills,
       time: timeSeconds,
       runStats,
-      coinsEarned,
+      coinsEarned: this.lifecycle.canPersist() ? coinsEarned : 0,
       newRecords,
       bestCombo,
       starterKey: this.starterKey,
       formName,
-    })
+      unlockedSquirtle: outcome === "victory" && this.lifecycle.canPersist() && unlockStarter("squirtle"),
+    }
+    if (outcome === "victory") this.scene.get("UIScene").events.emit("show-victory", result)
+    else this.events.emit("game-over", result)
   }
 
   private tryRevive(): boolean {
@@ -1012,7 +1002,7 @@ export class GameScene extends Phaser.Scene {
       megaGauge: getMegaSystem()?.getGaugeRatio() ?? 0,
       megaActive: getMegaSystem()?.isActive() ?? false,
       megaTimeRemaining: getMegaSystem()?.getMegaTimeRemaining(this.gameTime) ?? 0,
-      companions: getCompanionSystem()?.getCompanions() ?? [],
+      companions: getCompanionSystem()?.getCompanions().filter(companion => !companion.viewer) ?? [],
       manualAimEnabled: this.player.isManualAimEnabled(),
     })
   }

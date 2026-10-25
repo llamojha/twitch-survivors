@@ -2002,7 +2002,7 @@ export class UIScene extends Phaser.Scene {
     // ── Buttons ─────────────────────────────────────────────────
     const btnY = Math.min(yPos + scaled(40), height - scaled(60));
 
-    const continueBtn = this.add.text(width / 2, btnY, t('ui.continue'), {
+    const continueBtn = this.add.text(width / 2, btnY, t('ui.retry'), {
       fontSize: fontSize(18), color: '#44ff44', fontFamily: 'monospace', fontStyle: 'bold',
       stroke: '#000000', strokeThickness: scaled(3),
     }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setAlpha(0);
@@ -2014,7 +2014,7 @@ export class UIScene extends Phaser.Scene {
       SoundManager.playClick();
       this.victoryContainer.setVisible(false);
       this.victoryContainer.removeAll(true);
-      this.scene.get('GameScene').events.emit('resume-game');
+      this.scene.get('GameScene').scene.restart();
     });
 
     const menuBtn = this.add.text(width / 2, btnY + scaled(30), t('ui.mainMenu'), {

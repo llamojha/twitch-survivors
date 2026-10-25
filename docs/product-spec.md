@@ -1,13 +1,13 @@
 # Twitch Survivors — product specification
 
-Status: v0.2, Twitch-first MVP; confirmed direction with proposed tuning defaults.
+Status: v0.3, mock gameplay development; live Twitch acceptance deferred by user on 2026-10-25.
 Date: 2026-10-24. This specification supersedes conflicting scope in the two original bootstrap briefs.
 
 ## 1. Product
 
 A browser survivor game where the streamer controls the main character and viewers become autonomous companions carrying skills. The player survives waves, gains levels, recruits the audience, defeats bosses, and retains streamer progression between runs. Viewers see their names and contributions in the game.
 
-Use the existing poke-survivors implementation as the foundation. Preserve and adapt most existing maps, bosses, attacks, upgrades, and progression instead of reducing the product to a two-role demo. Preserve that longer-term direction without requiring exhaustive content conversion before the MVP. Connect actual Twitch chat first, then prove the complete viewer-to-companion loop on an existing playable stage. Inventory only what the immediate slice needs; claim support only for verified combinations.
+Use the existing poke-survivors implementation as the foundation. Preserve and adapt most existing maps, bosses, attacks, upgrades, and progression instead of reducing the product to a two-role demo. Preserve that longer-term direction without requiring exhaustive content conversion before the MVP. Develop the viewer-to-companion loop with local simulation now; verify actual Twitch delivery later, before release. Inventory only what the immediate slice needs; claim support only for verified combinations.
 
 ## 2. Confirmed decisions
 
@@ -22,7 +22,7 @@ Use the existing poke-survivors implementation as the foundation. Preserve and a
 | D07 | Default recruitment is level-based; a streamer-controlled Join all mode is also required. |
 | D08 | Viewer roles and contribution statistics reset each run; streamer progression persists. |
 | D09 | Play the base game starts immediately using the default character/map. Keep the inherited assets and gameplay for this baseline. |
-| D11 | Twitch integration is the first new feature; deliver the smallest complete live viewer-to-companion loop before broad conversion or polish. |
+| D11 | Both input providers exist; as of 2026-10-25, use mocks for gameplay development and defer live Twitch authorization/acceptance until later, before release. |
 | D10 | Replace the current title illustration with an actual gameplay screenshot in the final presentation pass. |
 
 ## 3. Scope
@@ -88,9 +88,9 @@ The above credit, queue, mode-switch, and late-arrival semantics are proposed im
 
 Preserve existing enemy waves, map topology, boss behavior, collision/pooling, XP collection, and streamer meta-progression wherever compatible. Introduce recruitment at the level-up boundary rather than rewriting the survivor loop.
 
-Proposed default: existing level-up upgrades remain, and the recruitment credit is earned in addition. This must be balanced because larger teams multiply damage. Skill upgrades must have an explicit target (player, one companion, or whole squad); never infer ownership from the selected player character. Resolve the reward rule at Step 3 using only the relevant inherited upgrade behavior.
+Confirmed 2026-10-25: in audience mode, recruitment replaces the level-up skill picker; solo retains existing upgrades. Empty-queue credits are banked. This must be balanced because larger teams multiply damage. Skill upgrades must have an explicit target (player, one companion, or whole squad); never infer ownership from the selected player character. Resolve the reward rule at Step 3 using only the relevant inherited upgrade behavior.
 
-First connect real Twitch joins to the game queue. Then make one actual viewer a fighting companion using one existing compatible skill, before expanding to the small varied MVP role set. This is implementation order, not a two-role product scope. Disabled attack IDs and incompatibility reasons belong in the catalog audit.
+Use local joins through the shared queue to make one simulated viewer a fighting companion using one existing compatible skill, before expanding to the small varied MVP role set. This is implementation order, not a two-role product scope. Disabled attack IDs and incompatibility reasons belong in the catalog audit.
 
 Proposed default: companions have no separate permadeath in the first release. They remain active for the run; the streamer losing ends the team run. Confirm at Step 3 if inherited companion behavior requires a different choice.
 
@@ -126,7 +126,7 @@ Proposed overload behavior: stagger admission, show pending viewers, and reduce 
 ## 10. Open decisions
 
 - Exact eligible initial companion/attack catalog: resolve through compatibility audit, retaining a broad selection rather than Fireball/Knight only.
-- Whether recruitment replaces a level-up reward or is additional; proposed default is additional alongside existing upgrades.
+- Recruitment replaces the level reward in audience mode (confirmed 2026-10-25); solo upgrades remain unchanged.
 - Empty-queue credits, mode switch rules, and companion mortality: proposed defaults above.
 - Final capacity/fallback policy after measured load tests.
 - Twitch deployment/authentication arrangement after technical validation.

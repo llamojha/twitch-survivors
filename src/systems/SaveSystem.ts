@@ -2,7 +2,7 @@
 // Module singleton pattern: module-level state + exported functions.
 
 const STORAGE_KEY = 'twitch-survivors-save';
-const CURRENT_VERSION = 2;
+const CURRENT_VERSION = 3;
 const POKEDEX_TOTAL = 47;
 
 // ── Types ────────────────────────────────────────────────────────────────
@@ -17,6 +17,7 @@ export interface PokedexEntry {
 export interface LifetimeStats {
   totalRuns: number;
   totalDeaths: number;
+  totalVictories: number;
   totalKills: number;
   bossesKilled: number;
   totalDamageDealt: number;
@@ -33,6 +34,7 @@ export interface LifetimeStats {
 }
 
 export interface LastRunData {
+  readonly outcome: 'defeat' | 'victory';
   readonly starterKey: string;
   readonly formName: string;
   readonly level: number;
@@ -73,6 +75,7 @@ function createFreshStats(): LifetimeStats {
   return {
     totalRuns: 0,
     totalDeaths: 0,
+    totalVictories: 0,
     totalKills: 0,
     bossesKilled: 0,
     totalDamageDealt: 0,
@@ -120,8 +123,19 @@ function createFreshSave(): SaveData {
   };
 }
 
+// Validation runs use a disposable in-memory copy; disk progression remains untouched.
+let simulationBaseline: SaveData | null = null;
+export function setRunSimulation(enabled: boolean): void {
+  if (enabled && !simulationBaseline) {
+    simulationBaseline = structuredClone(ensureLoaded());
+  } else if (!enabled && simulationBaseline) {
+    data = simulationBaseline;
+    simulationBaseline = null;
+  }
+}
+
 function persist(): void {
-  if (!data) return;
+  if (!data || simulationBaseline) return;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   } catch {
@@ -158,6 +172,11 @@ export function initSaveSystem(): void {
         data.pokedex ??= {};
         data.records ??= { bestTime: 0, bestKills: 0, bestLevel: 0 };
         data.stats ??= createFreshStats();
+        data.stats.totalVictories ??= 0;
+        const loadedLastRun = data.lastRun;
+        if (loadedLastRun && !Object.prototype.hasOwnProperty.call(loadedLastRun, 'outcome')) {
+          data.lastRun = { ...loadedLastRun, outcome: 'defeat' };
+        }
         data.settings ??= { muted: false, quality: 'normal', vfxIntensity: 100 };
         data.settings.quality ??= 'normal';
         data.settings.vfxIntensity ??= 100;
@@ -328,6 +347,7 @@ export function setVfxIntensity(value: number): void {
 // ── Lifetime Stats ──────────────────────────────────────────────────────
 
 export interface RunEndData {
+  readonly outcome: 'defeat' | 'victory';
   readonly kills: number;
   readonly bossesDefeated: number;
   readonly damageDealt: number;
@@ -348,7 +368,8 @@ export function accumulateRunStats(run: RunEndData): void {
   const s = d.stats;
 
   s.totalRuns++;
-  s.totalDeaths++;
+  if (run.outcome === 'victory') s.totalVictories++;
+  else s.totalDeaths++;
   s.totalKills += run.kills;
   s.bossesKilled += run.bossesDefeated;
   s.totalDamageDealt += run.damageDealt;

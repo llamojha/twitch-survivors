@@ -20,3 +20,16 @@ Official references:
 - [Required startup and hourly token validation](https://dev.twitch.tv/docs/authentication/validate-tokens/)
 - [Twitch authentication and token handling](https://dev.twitch.tv/docs/authentication/)
 - [Preferred EventSub chat architecture](https://dev.twitch.tv/docs/chat/)
+
+## Step 2 live acceptance checklist
+
+Start the base game first, because starting a run clears its queue. Open Audience, choose Twitch chat, enter connection details locally and connect. Do not share or record the token.
+
+- [ ] Connected status names the intended channel.
+- [ ] Send !join in that channel; the viewer appears in the game queue.
+- [ ] Send !join again from the same account; queue count stays unchanged.
+- [ ] If available, a second account joins and appears after the first.
+- [ ] Switch to Local simulation; the old queue clears and Alice can join without Twitch credentials.
+- [ ] Record date, browser, observed counts and pass/fail, without credentials or unrelated chat contents.
+
+Automated integration coverage exercises both providers through the same session. This is protocol simulation, not evidence of real Twitch delivery. Live acceptance is still pending.

@@ -4,7 +4,7 @@
 
 ## Current state
 
-This is the first migration pass, not a finished Twitch game. It has an original Twitch Survivors entry screen and retains the upstream combat, enemies, waves, maps, map editor, progression, and selection/HUD systems. Pokémon artwork, names, and much of the UI still remain. Local audience simulation and an authenticated Twitch chat provider now feed the same waiting queue. Companion recruitment is not implemented yet; live Twitch delivery remains an early acceptance check.
+This is the first migration pass, not a finished Twitch game. It has an original Twitch Survivors entry screen and retains the upstream combat, enemies, waves, maps, map editor, progression, and selection/HUD systems. Pokémon artwork, names, and much of the UI still remain. Local audience simulation and an authenticated Twitch chat provider now feed the same waiting queue. Mock viewers now become named companions with the inherited projectile attack. Live Twitch delivery is deferred until later acceptance.
 
 The direction is one streamer-controlled survivor, with viewers joining as named skills or companions. See [the migration TODO](docs/migration-plan.md).
 
@@ -27,7 +27,11 @@ npm run preview
 
 Audience tests are available through `npm test`. Browser validation and build results are recorded in [the hackathon log](docs/hackathon.md).
 
-Open **Audience** in the bottom-right corner. Local simulation starts automatically: use **Join viewer** with Alice or another name, or **Add 10 viewers**. Switch to Twitch chat to enter connection details; see [Twitch setup](docs/twitch-setup.md). Both modes share duplicate protection and the waiting queue. Switching sources or starting a new run clears the queue. Viewers do not fight yet.
+Open **Audience** in the bottom-right corner. Local simulation starts automatically: use **Join viewer** with Alice or another name, or **Add 10 viewers**. Switch to Twitch chat to enter connection details; see [Twitch setup](docs/twitch-setup.md). Both modes share duplicate protection and the waiting queue. Switching sources or starting a new run clears the queue. In Audience, select **Gameplay → Audience companions**. Each level recruits one queued viewer instead of showing the skill picker; empty-queue credits are banked. **Recruitment → Join all** admits current and future viewers. Returning to level mode keeps companions. Solo upgrades remain available; switching to solo stops recruitment but keeps existing companions. Local **Simulate level-up** exercises the real level reward path. Random roles are Scout (rapid shot), Volley (spread), and Piercer (three targets). Reset audience clears viewers and credits.
+
+The audience panel shows each viewer's direct projectile damage and kills and a summary when a run ends. Expand **Local validation controls** to start an isolated test run, try a stage or boss, and force an outcome; these test runs do not save progression. Damage from effects over time is not included in viewer stats yet.
+
+Crowded runs keep every viewer active while rotating a collision-free subset of world nameplates; the complete roster remains in the panel. Validation telemetry reports active shots and dropped shots. **Advance to next boss** enters the real configured boss queue in an invincible simulation run, so defeating the queue still drives the normal stage-completion path.
 
 ## Architecture and provenance
 

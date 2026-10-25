@@ -1,8 +1,12 @@
 import Phaser from 'phaser';
+import { pickCompanionRole, registerCompanionHit, type CompanionShotHits } from '../audience/CompanionRoles';
+import { audienceSession } from '../audience/AudienceSession';
+import type { ViewerIdentity } from '../audience/AudienceProvider';
 import type { GameContext } from './GameContext';
 import { Companion } from '../entities/Companion';
 import { Enemy } from '../entities/Enemy';
 import { getSaveData } from './SaveSystem';
+import { selectViewerLabelIds } from '../audience/ViewerLabelLayout';
 
 // ── Config ────────────────────────────────────────────────────────────
 const COMPANION = {
@@ -21,6 +25,7 @@ const FALLBACK_COMPANIONS: readonly string[] = [
   'pidgey',
   'zubat',
 ] as const;
+const MAX_AUDIENCE_PROJECTILES = 512;
 
 /** Converte enemy key da Pokédex para texture key do spritesheet */
 function toTextureKey(pokedexKey: string): string {
@@ -52,6 +57,9 @@ class CompanionSystem {
   private readonly companions: Companion[] = [];
   private readonly companionBullets: Phaser.Physics.Arcade.Group;
   private bulletCollider: Phaser.Physics.Arcade.Collider | null = null;
+  private unsubscribeAudience: (() => void) | null = null;
+  private droppedShots = 0;
+  private visibleViewerLabels = 0;
   private readonly ctx: GameContext;
 
   constructor(ctx: GameContext) {
@@ -61,7 +69,7 @@ class CompanionSystem {
     // Pool dedicado para projéteis de companions
     this.companionBullets = scene.physics.add.group({
       classType: Phaser.Physics.Arcade.Sprite,
-      maxSize: 20,
+      maxSize: MAX_AUDIENCE_PROJECTILES,
       runChildUpdate: false,
       allowGravity: false,
     });
@@ -75,14 +83,40 @@ class CompanionSystem {
         const enemy = enemyObj as Enemy;
         if (!bullet.active || !enemy.active) return;
 
+        const hits = bullet.getData('companionHits') as CompanionShotHits;
+        if (!registerCompanionHit(hits, enemy)) return;
         const dmg = bullet.getData('damage') as number;
-        enemy.takeDamage(dmg);
+        const owner = bullet.getData('viewerOwner') as ViewerIdentity | null;
+        enemy.takeDamage(dmg, owner ? (damage, killed) => {
+          audienceSession.recordContribution(owner.id, damage, killed);
+        } : undefined);
+        if (hits.remaining > 0) return;
 
         bullet.setActive(false).setVisible(false);
         const body = bullet.body as Phaser.Physics.Arcade.Body | null;
         if (body) body.stop();
       },
     );
+
+    this.unsubscribeAudience = audienceSession.onChange(() => {
+      const active = new Set(audienceSession.getActiveViewers().map(viewer => viewer.id));
+      for (let i = this.companions.length - 1; i >= 0; i--) {
+        const companion = this.companions[i];
+        if (companion.viewer && !active.has(companion.viewer.id)) {
+          companion.destroy();
+          this.companions.splice(i, 1);
+        }
+      }
+      for (const object of this.companionBullets.getChildren()) {
+        const bullet = object as Phaser.Physics.Arcade.Sprite;
+        const owner = bullet.getData('viewerOwner') as ViewerIdentity | null;
+        if (owner && !active.has(owner.id)) {
+          bullet.setActive(false).setVisible(false);
+          (bullet.body as Phaser.Physics.Arcade.Body).stop();
+        }
+      }
+    });
+    scene.events.once(Phaser.Scenes.Events.SHUTDOWN, this.destroy, this);
 
     // Escuta evento de disparo emitido pelo Companion
     scene.events.on(
@@ -94,6 +128,14 @@ class CompanionSystem {
 
   // ── Update (chamado todo frame pelo GameScene) ─────────────────────
   update(time: number, delta: number): void {
+    for (const viewer of audienceSession.getViewers()) {
+      if (!audienceSession.canRecruit()) break;
+      const keys = FALLBACK_COMPANIONS.filter(key => this.ctx.scene.textures.exists(toTextureKey(key)));
+      if (!keys.length) break;
+      if (audienceSession.admit(viewer.id)) {
+        this.addCompanion(keys[Phaser.Math.Between(0, keys.length - 1)], viewer);
+      }
+    }
     const player = this.ctx.player;
     for (let i = 0; i < this.companions.length; i++) {
       const companion = this.companions[i];
@@ -101,32 +143,37 @@ class CompanionSystem {
         companion.update(time, delta, player);
       }
     }
+    this.layoutViewerLabels(time);
+  }
+
+  private layoutViewerLabels(time: number): void {
+    const labels = this.companions.flatMap(companion => {
+      const label = companion.getViewerLabel();
+      if (!label || !companion.viewer) return [];
+      const bounds = label.getBounds();
+      return [{ id: companion.viewer.id, label, x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height }];
+    });
+    const maxVisible = Phaser.Math.Clamp(Math.floor(this.ctx.scene.scale.width / 90), 4, 10);
+    const visible = selectViewerLabelIds(labels, Math.floor(time / 2500), maxVisible);
+    for (const entry of labels) entry.label.setVisible(visible.has(entry.id));
+    this.visibleViewerLabels = visible.size;
   }
 
   // ── Handler do evento companion-fire ───────────────────────────────
   private handleCompanionFire = (
-    fromX: number,
-    fromY: number,
+    companion: Companion,
     targetX: number,
     targetY: number,
     damage: number,
   ): void => {
-    // Encontra o companion que está na posição (fromX, fromY) e delega fire
-    for (const companion of this.companions) {
-      if (
-        companion.active &&
-        Math.abs(companion.x - fromX) < 2 &&
-        Math.abs(companion.y - fromY) < 2
-      ) {
-        companion.fire(this.companionBullets, targetX, targetY, damage);
-        return;
-      }
+    if (companion.active && this.companions.includes(companion)) {
+      this.droppedShots += companion.fire(this.companionBullets, targetX, targetY, damage);
     }
   };
 
   // ── Try drop Friend Ball (chamado quando boss morre) ───────────────
   tryDropFriendBall(x: number, y: number): boolean {
-    if (this.companions.length >= COMPANION.maxCompanions) return false;
+    if (this.companions.filter(companion => !companion.viewer).length >= COMPANION.maxCompanions) return false;
     if (Math.random() > COMPANION.friendBallDropChance) return false;
 
     const scene = this.ctx.scene;
@@ -160,14 +207,18 @@ class CompanionSystem {
   }
 
   // ── Adiciona companion ao player ───────────────────────────────────
-  addCompanion(key: string): Companion | null {
-    if (this.companions.length >= COMPANION.maxCompanions) return null;
+  addCompanion(key: string, viewer: ViewerIdentity | null = null): Companion | null {
+    if (viewer) {
+      const existing = this.companions.find(companion => companion.viewer?.id === viewer.id);
+      if (existing) return existing;
+    }
+    if (!viewer && this.companions.filter(companion => !companion.viewer).length >= COMPANION.maxCompanions) return null;
 
     const scene = this.ctx.scene;
     const player = this.ctx.player;
 
     // Offset angular: espaça companions uniformemente
-    const orbitOffset = this.companions.length * Math.PI;
+    const orbitOffset = this.companions.length * 2.399963229728653;
 
     const textureKey = toTextureKey(key);
     const companion = new Companion(
@@ -176,9 +227,12 @@ class CompanionSystem {
       player.y,
       textureKey,
       orbitOffset,
+      viewer ? Object.freeze({ ...viewer }) : null,
+      viewer ? pickCompanionRole() : undefined,
     );
 
     this.companions.push(companion);
+    if (viewer) audienceSession.registerContribution(viewer, companion.role);
 
     // Spawn-in visual: fade + scale
     companion.setAlpha(0);
@@ -244,13 +298,22 @@ class CompanionSystem {
     return COMPANION.maxCompanions;
   }
 
+  getAudienceMetrics(): Readonly<{ activeProjectiles: number; droppedShots: number; visibleLabels: number }> {
+    return { activeProjectiles: this.companionBullets.countActive(true), droppedShots: this.droppedShots,
+      visibleLabels: this.visibleViewerLabels };
+  }
+
   // ── Cleanup (chamado no shutdown da scene) ─────────────────────────
   destroy(): void {
+    this.unsubscribeAudience?.();
+    this.unsubscribeAudience = null;
     const scene = this.ctx.scene;
+    scene.events.off(Phaser.Scenes.Events.SHUTDOWN, this.destroy, this);
     scene.events.off('companion-fire', this.handleCompanionFire, this);
 
     if (this.bulletCollider) {
-      scene.physics.world.removeCollider(this.bulletCollider);
+      // Arcade Physics may already have disposed its world during scene shutdown.
+      scene.physics.world?.removeCollider(this.bulletCollider);
       this.bulletCollider = null;
     }
 

@@ -57,3 +57,9 @@
   .audience-panel { right: 8px; bottom: max(8px, env(safe-area-inset-bottom)); width: min(290px, calc(100vw - 16px)); }
   .audience-panel section { max-height: 52vh; padding: 10px; }
 }
+
+.audience-contributions { max-height: 150px; overflow: auto; padding-left: 22px; overflow-wrap: anywhere; }
+.audience-summary, .audience-run-state { color: #e7d6a3; }
+.audience-validation { margin: 8px 0; border-top: 1px solid #52637b; padding-top: 8px; }
+.audience-validation .audience-actions { margin-top: 6px; }
+.audience-validation summary { cursor: pointer; }

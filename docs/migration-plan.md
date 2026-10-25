@@ -23,8 +23,8 @@ The latest user decisions supersede the initial bootstrap scope. See [product sp
 - [ ] Step 1 (in progress): Local/Twitch input modes feeding one shared queue; verify locally and then with authorized real chat.
 - [ ] Step 2: recruit one real viewer as a named fighting companion using an existing skill.
 - [ ] Step 3: default level recruitment, host Join all, small varied random role catalog.
-- [ ] Step 4: visible contributions, clean restart and reconnect; complete a live audience run.
-- [ ] Step 5: verify a modest audience capacity and the supported gameplay path.
+- [x] Step 4: visible contributions and clean local restart; live reconnect acceptance remains in Twitch Step 2.
+- [ ] Step 5: local gameplay implementation complete; finish natural boss-sequence and sustained-capacity acceptance.
 - [ ] Step 6 (FINAL implementation task): replace release assets/branding and capture actual gameplay for the title.
 - [ ] After Step 6: final-art regression, demo and release preparation.
 - [ ] Post-MVP: expand toward the full inherited content catalog and larger audiences.
@@ -41,8 +41,8 @@ The inherited project bundles third-party game artwork. This checkout is a migra
 ## Current execution TODO — 2026-10-24
 The six-step order and acceptance checkboxes in [implementation-plan.md](implementation-plan.md) supersede earlier milestone sequencing above.
 - [x] 1. Implement local and Twitch audience inputs with one shared queue.
-- [ ] 2. Prove real Twitch and simulated joins reach the game (local verified; live pending).
-- [ ] 3. Recruit named autonomous companions and varied random skills.
-- [ ] 4. Implement level-based and host-controlled Join all recruitment.
-- [ ] 5. Complete contributions, restart, progression and local/live tests.
+- [ ] 2. Live Twitch acceptance deferred by user on 2026-10-25; local and simulated protocol checks pass.
+- [x] 3. Named mock companions with Scout, Volley and Piercer projectile roles.
+- [x] 4. Implement level-based and host-controlled Join all recruitment locally; live Twitch confirmation deferred.
+- [ ] 5. Contributions, restart, outcome persistence, evolution and scaling controls implemented; full natural victory, capacity declaration and live tests remain.
 - [ ] 6. Replace assets last, then verify release.

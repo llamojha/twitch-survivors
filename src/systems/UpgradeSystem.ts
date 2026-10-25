@@ -1,3 +1,4 @@
+import { audienceSession } from '../audience/AudienceSession';
 import Phaser from 'phaser';
 import { ATTACKS, EVOLUTIONS, UPGRADE_DEFS } from '../config';
 import type { UpgradeOption, AttackType, HeldItemType, PokemonForm } from '../types';
@@ -130,6 +131,9 @@ const STARTER_ATTACK_POOL: Record<string, ReadonlySet<AttackType>> = {
 
 
 export class UpgradeSystem {
+  private evolutionTimer: number | undefined;
+
+  destroy(): void { window.clearTimeout(this.evolutionTimer); }
   constructor(
     private readonly ctx: GameContext,
     private readonly attackFactory: AttackFactory,
@@ -139,6 +143,14 @@ export class UpgradeSystem {
   // ── Level Up ──────────────────────────────────────────────────────
   triggerLevelUp(): void {
     const scene = this.ctx.scene;
+    audienceSession.recordLevel(this.ctx.player.stats.level);
+    if (audienceSession.isEnabled()) {
+      const evolution = this.ctx.starterConfig.forms?.find(form => form.level === this.ctx.player.stats.level && form.form !== 'base');
+      if (evolution && evolution.form !== this.ctx.player.stats.form) this.triggerEvolution(evolution.form, false);
+      SoundManager.playLevelUp();
+      this.emitStats();
+      return;
+    }
     scene.events.emit('pause-game');
 
     const level = this.ctx.player.stats.level;
@@ -155,7 +167,7 @@ export class UpgradeSystem {
   }
 
   // ── Evolution ─────────────────────────────────────────────────────
-  private triggerEvolution(targetForm: PokemonForm): void {
+  private triggerEvolution(targetForm: PokemonForm, showPicker = true): void {
     const scene = this.ctx.scene;
     const player = this.ctx.player;
     const forms = this.ctx.starterConfig.forms ?? [];
@@ -164,6 +176,7 @@ export class UpgradeSystem {
 
     const formConfig = player.evolve(targetForm);
     if (!formConfig) {
+      if (!showPicker) return;
       SoundManager.playLevelUp();
       const options = this.generateUpgradeOptions();
       scene.events.emit('level-up', options, player.stats.level, this.getDisplayRerolls());
@@ -194,9 +207,11 @@ export class UpgradeSystem {
       newSlots: formConfig.maxAttackSlots,
     });
 
+    if (!showPicker) return;
+
     // NOTE: scene.time is paused during level-up (Fase B fix), so delayedCall
     // would never fire. Use native setTimeout which is unaffected by scene pause.
-    window.setTimeout(() => {
+    this.evolutionTimer = window.setTimeout(() => {
       if (!scene.scene.isActive()) return;
       SoundManager.playLevelUp();
       const options = this.generateUpgradeOptions();
@@ -458,7 +473,7 @@ export class UpgradeSystem {
         this.pickupSystem.showPickupNotification('RARE CANDY! +1 Level!', 0xFFD700);
         player.addXp(player.stats.xpToNext);
         this.triggerLevelUp();
-        return true; // triggerLevelUp handles pause + emitStats
+        return !audienceSession.isEnabled(); // Audience reward does not open a picker; resume the gacha pause.
       }
       case 'coinLarge': {
         this.pickupSystem.showPickupNotification('BIG COINS! +300₽', 0xFFD700);
