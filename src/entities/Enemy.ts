@@ -1,3 +1,4 @@
+import { actualHealthLost } from "../audience/ContributionTracker"
 import Phaser from "phaser"
 import type {
   EnemyConfig,
@@ -325,7 +326,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
    * - Bonus damage if enemy has matching status (burn/wet)
    * - Chance to apply burn or wet on hit
    */
-  takeDamage(amount: number): boolean {
+  takeDamage(amount: number, onHit?: (damage: number, killed: boolean) => void): boolean {
     if (!this.scene || this.isDead) return false
 
     // ── Shield check (Mr. Mime shielder behavior) ─────
@@ -429,6 +430,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       }
     }
 
+    const hpBeforeHit = this.hp
     this.hp -= finalAmount
     recordDamage(finalAmount)
 
@@ -478,6 +480,9 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     })
 
     this.drawHpBar()
+
+    // Attribute direct damage before death events can finalize the run summary.
+    onHit?.(actualHealthLost(hpBeforeHit, this.hp), this.hp <= 0)
 
     if (this.hp <= 0) {
       this.die()

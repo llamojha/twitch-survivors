@@ -19,6 +19,9 @@ test('registry deduplicates ids, preserves FIFO and protects snapshots', () => {
 
 test('mock emits normalized duplicates; session deduplicates and resets each run', async () => {
   const session = new AudienceSession();
+  session.bindRuntime({ level: () => 1, running: () => true, simulateLevel: () => {} });
+  session.setEnabled(true);
+  session.setRecruitmentMode('join-all');
   const mock = new MockAudienceProvider();
   let emitted = 0;
   mock.onEvent(() => emitted++);
@@ -56,6 +59,9 @@ class DelayedProvider extends MockAudienceProvider {
 
 test('provider switches ignore late events, status and connect rejection', async () => {
   const session = new AudienceSession();
+  session.bindRuntime({ level: () => 1, running: () => true, simulateLevel: () => {} });
+  session.setEnabled(true);
+  session.setRecruitmentMode('join-all');
   const oldProvider = new DelayedProvider();
   const connecting = session.setProvider(oldProvider);
   const current = new MockAudienceProvider();
@@ -71,6 +77,9 @@ test('provider switches ignore late events, status and connect rejection', async
 
 test('current connection failures surface in status subscriptions', async () => {
   const session = new AudienceSession();
+  session.bindRuntime({ level: () => 1, running: () => true, simulateLevel: () => {} });
+  session.setEnabled(true);
+  session.setRecruitmentMode('join-all');
   const provider = new DelayedProvider();
   const statuses: string[] = [];
   const unsubscribe = session.onStatus(status => statuses.push(status.state));
@@ -82,4 +91,55 @@ test('current connection failures surface in status subscriptions', async () => 
   unsubscribe();
   await session.disconnect();
   assert.equal(statuses.length, 3);
+});
+
+
+test('admission removes waiting viewers but retains duplicate protection and defensive ownership', async () => {
+  const session = new AudienceSession();
+  session.bindRuntime({ level: () => 1, running: () => true, simulateLevel: () => {} });
+  session.setEnabled(true);
+  session.setRecruitmentMode('join-all');
+  const mock = new MockAudienceProvider();
+  await session.setProvider(mock);
+  mock.join('Alice');
+  mock.join('Bob');
+  let notifications = 0;
+  const unsubscribe = session.onChange(() => notifications++);
+  assert.equal(session.admit('unknown'), false);
+  assert.equal(session.admit('mock:alice'), true);
+  assert.equal(session.admit('mock:alice'), false);
+  mock.join('ALICE');
+  assert.equal(notifications, 2);
+  assert.deepEqual(session.getViewers().map(viewer => viewer.displayName), ['Bob']);
+  const active = session.getActiveViewers();
+  assert.deepEqual(active, [{ id: 'mock:alice', displayName: 'Alice' }]);
+  active[0].id = 'corrupt';
+  assert.equal(session.getActiveViewers()[0].id, 'mock:alice');
+  unsubscribe();
+  session.reset();
+  assert.deepEqual(session.getActiveViewers(), []);
+  assert.deepEqual(session.getViewers(), []);
+  mock.join('Alice');
+  assert.equal(session.admit('mock:alice'), true);
+  await session.disconnect();
+  assert.deepEqual(session.getActiveViewers(), []);
+});
+
+test('switching input clears admitted viewers and allows a fresh roster', async () => {
+  const session = new AudienceSession();
+  session.bindRuntime({ level: () => 1, running: () => true, simulateLevel: () => {} });
+  session.setEnabled(true);
+  session.setRecruitmentMode('join-all');
+  const first = new MockAudienceProvider();
+  await session.setProvider(first);
+  first.join('Alice');
+  session.admit('mock:alice');
+  const second = new MockAudienceProvider();
+  await session.setProvider(second);
+  assert.deepEqual(session.getActiveViewers(), []);
+  assert.deepEqual(session.getViewers(), []);
+  assert.equal(first.join('Old viewer'), false);
+  second.join('Alice');
+  assert.equal(session.admit('mock:alice'), true);
+  assert.equal(session.getActiveViewers().length, 1);
 });

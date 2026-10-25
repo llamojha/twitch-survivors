@@ -436,6 +436,21 @@ export class SpawnSystem {
 
   isAllBossesDefeated(): boolean { return this.allBossesDefeated; }
 
+  getBossProgress(): Readonly<{ index: number; total: number }> {
+    return { index: this.bossQueueIndex, total: this.stageBosses.length };
+  }
+
+  /** Simulation helper that enters the next boss through the real queue and death path. */
+  advanceToNextBossForSimulation(): boolean {
+    if (this.activeBosses.size > 0 || this.waitingForSpawn || this.allBossesDefeated) return false;
+    const nextBoss = this.stageBosses[this.bossQueueIndex];
+    if (!nextBoss) return false;
+    this.waitingForSpawn = true;
+    this.bossQueueIndex++;
+    this.spawnBossWithConfig(nextBoss);
+    return true;
+  }
+
   // ── Boss spawning (legacy, used by DebugSystem) ──────────────────
   spawnBoss(type: EnemyType): void {
     const scene = this.ctx.scene;

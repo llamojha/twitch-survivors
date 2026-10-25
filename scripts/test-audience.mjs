@@ -6,7 +6,8 @@ import ts from 'typescript';
 
 // Compile isolated pure modules with the project's pinned compiler; no new runner dependency.
 const directory = mkdtempSync(join(tmpdir(), 'twitch-survivors-tests-'));
-const roots = ['src/audience', 'src/systems/ViewerRegistry.ts', 'tests'];
+const roots = ['src/audience', 'src/systems/ViewerRegistry.ts', 'src/systems/SaveSystem.ts',
+  'src/config.ts', 'src/types.ts', 'src/data', 'tests'];
 function compile(path) {
   if (!path.endsWith('.ts')) {
     for (const entry of readdirSync(path, { withFileTypes: true })) {

@@ -137,3 +137,45 @@ test('hourly token revalidation closes revoked sessions and cleans up timers', a
   context.mock.timers.tick(3600000);
   assert.equal(validations, 2);
 });
+
+test('Twitch transport and local simulation feed the same run queue with identical ordering and deduplication', async () => {
+  const { AudienceSession } = await import('../src/audience/AudienceSession');
+  const { MockAudienceProvider } = await import('../src/audience/MockAudienceProvider');
+  const session = new AudienceSession();
+  session.bindRuntime({ level: () => 1, running: () => true, simulateLevel: () => {} });
+  session.setEnabled(true);
+  session.setRecruitmentMode('join-all');
+  const f = fixture();
+  const local = new MockAudienceProvider();
+  const observed: string[][] = [];
+  const unsubscribe = session.onQueue(viewers => observed.push(viewers.map(viewer => viewer.displayName)));
+  try {
+    await session.setProvider(f.provider);
+    f.receive(':tmi.twitch.tv 001 reader :Welcome\r\n@room-id=42 :tmi.twitch.tv ROOMSTATE #example\r\n');
+    const join = (id: string, name: string) => f.receive(`@display-name=${name};user-id=${id} :viewer!viewer@host PRIVMSG #example :!join\r\n`);
+    join('10', 'Alice');
+    join('10', 'Alice');
+    join('20', 'Bob');
+    const twitchNames = session.getViewers().map(viewer => viewer.displayName);
+    assert.deepEqual(twitchNames, ['Alice', 'Bob']);
+    assert.equal(session.getStatus().state, 'connected');
+    session.reset();
+    assert.equal(session.getStatus().state, 'connected');
+    join('10', 'Alice');
+    assert.deepEqual(session.getViewers().map(viewer => viewer.id), ['twitch:10']);
+    const staleMessage = f.socket.onmessage;
+    await session.setProvider(local);
+    assert.ok(f.isClosed());
+    assert.deepEqual(session.getViewers(), []);
+    staleMessage?.call(f.socket as WebSocket, { data: '@user-id=99 :late!late@host PRIVMSG #example :!join\r\n' } as MessageEvent);
+    local.join('Alice');
+    local.join('ALICE');
+    local.join('Bob');
+    assert.deepEqual(session.getViewers().map(viewer => viewer.displayName), twitchNames);
+    assert.deepEqual(observed.at(-1), ['Alice', 'Bob']);
+    assert.deepEqual(session.getViewers().map(viewer => viewer.id), ['mock:alice', 'mock:bob']);
+  } finally {
+    unsubscribe();
+    await session.disconnect();
+  }
+});

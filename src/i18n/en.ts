@@ -181,6 +181,7 @@ export const en: Record<string, string> = {
   'statsScene.favoriteAttack': 'Favorite Attack',
   'statsScene.totalRuns': 'Games Played',
   'statsScene.totalDeaths': 'Deaths',
+  'statsScene.totalVictories': 'Victories',
   'statsScene.totalTime': 'Total Time',
   'statsScene.distance': 'Distance',
   'statsScene.highestEvolution': 'Highest Evolution',

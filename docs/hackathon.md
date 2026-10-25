@@ -60,3 +60,35 @@ Added AGENTS.md maintenance rules, .codex/README.md record index, and .codex/STA
 
 ## 2026-10-24 — private repository setup
 User authorized repository creation and initial commit/push. Created private llamojha/twitch-survivors and verified origin matches it. Selected feat/twitch-survivors-mvp to comply with the no-main/master-push rule; the new repository has no existing base branch. The initial snapshot includes migration, audience implementation, planning and Codex tracking. Filename screening and likely-secret signature checks on changed files found no matches. Existing gameplay validation is recorded above; this step changes repository metadata/documentation only.
+
+
+## 2026-10-24 — step 2 shared-input acceptance
+Added an integration test routing simulated Twitch IRC messages and local joins through AudienceSession. Verified equal name ordering, stable-ID deduplication, connection-preserving run reset, queue clearing and stale-message rejection on source switch. All 14 tests and typecheck passed. Added a live acceptance checklist to docs/twitch-setup.md. No production/UI changes; previous browser proof remains applicable. Actual Twitch delivery remains pending authorization in the local UI. No commit or push for this step.
+
+
+## 2026-10-25 — mock companion prototype
+User deferred live Twitch acceptance; no credentials are required for ongoing gameplay work. Astra low worker implemented waiting/active viewer state, once-per-run deduplication after admission, named companions using three retained sprites and one inherited projectile skill, explicit projectile ownership, pooled-shot timer generation protection, and reset/shutdown cleanup. Existing solo companion capacity and HUD remain separate. Temporary immediate admission is bounded to ten viewers per game update; level-based and host-controlled recruitment remain step 4.
+
+Validation: 16 tests passed, typecheck and final production build passed (existing bundle warning). Browser observed Alice duplicate suppression, eleven named companions, projectile firing, follow behavior during movement, reset removing all active companions and paused joins remaining queued. Browser error log empty. Screenshot: docs/mock-companions.png. Development-server reloads interrupted the full scene-restart/resume acceptance sequence; do not claim that sequence verified.
+
+Remaining: distinct random skills, final recruitment modes, contribution stats and measured capacity. Live Twitch remains deferred, not passed. Existing assets unchanged. No commits or pushes in this slice.
+
+
+## 2026-10-25 — recruitment and varied attacks
+Implemented using Astra low workers and parent integration: pure recruitment ledger, actual level reward gating, host gameplay/recruitment controls, local level simulation, and three random projectile roles (Scout/Volley/Piercer). Audience mode replaces skill selection; solo retains it. Empty queues bank credits; Join all earns no new credits and mode transitions preserve companions. Evolution code preserves its existing events without opening the audience skill picker; rare candy resumes its gacha pause.
+
+22 tests and final build including TypeScript passed. Browser verified FIFO level admission, later joins spending a saved credit, 11 recruits via Join all, switching back leaving 10 new viewers waiting, visible roles and solo upgrade picker. Fixed initial disabled test-button refresh. Extended run/evolution/rare-candy browser checks remain pending. No assets, commits or pushes.
+
+## 2026-10-25 — contributions and run validation
+Added effective direct projectile damage and kills, live viewer stats and outcome summaries, guarded run finalization, and local validation controls with isolated saved progression. Fixed a restart crash caused by cleaning up a collider after the physics world was destroyed. Added bounded game-loop timing and active entity counts.
+
+28 tests and production build including TypeScript passed; the existing large-bundle warning remains. In the browser, forced victory and defeat produced summaries, restart cleared viewers, and simulation kept saved coins at 101. Both stages started and their first bosses spawned; rare candy reached level 2. Brief 10/20/50-viewer tests used small enemy groups, and labels overlapped at 50. These checks do not establish natural boss completion, evolution, sustained-load capacity or comprehensive retained-content compatibility. Detailed timings and remaining TODOs are in docs/implementation-plan.md. Twitch live acceptance and asset replacement remain deferred.
+
+## 2026-10-25 — gameplay reliability and audience scaling
+Implemented additive save schema v3 with distinct victories and defeats, including v1/v2 migration; fixed victories incorrectly incrementing lifetime deaths. The local validation panel now advances the configured boss queue and shows boss progress, using simulation-only invincibility so boss deaths and `phase-complete` remain the real path. Added collision-free rotating world labels, deterministic first-shot staggering, a 512-shot pool, and label/projectile/drop telemetry. Added retained stage/enemy/boss/evolution contract coverage.
+
+33 focused tests and typecheck passed. Browser verified three restart/outcome cycles with saved coins fixed at 101, Charmander evolving to Charmeleon at level 16 through rare candy, and a configured phase-1 boss encounter. At 100 active viewers on the prior recorded Mac17,2 / 486×779 setup, four world labels remained readable while all viewers stayed in the roster; a roughly 27-second boss sample showed about 8.5 ms p95, 120 observed active shots and zero drops. A full natural boss sequence and sustained maximum-wave benchmark remain acceptance work, so 100 is not yet the declared supported limit. Live Twitch acceptance and assets remain deferred.
+
+## 2026-10-25 — recruitment-relative attack staggering
+
+Fixed the PR review finding where companions recruited after the scene clock exceeded their cooldown attacked immediately and then synchronized by role. Each companion now anchors its stable viewer phase to its first active update and advances from that schedule in whole cooldown intervals, including after missed attack opportunities. Added focused coverage for late recruitment and retained cadence offsets. Existing assets remain unchanged.

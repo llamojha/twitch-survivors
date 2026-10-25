@@ -275,6 +275,7 @@ export class StatsScene extends Phaser.Scene {
     return [
       { label: t('statsScene.totalRuns'), value: this.fmtNumber(s.totalRuns) },
       { label: t('statsScene.totalDeaths'), value: this.fmtNumber(s.totalDeaths) },
+      { label: t('statsScene.totalVictories'), value: this.fmtNumber(s.totalVictories) },
       { label: t('statsScene.totalTime'), value: this.fmtDuration(s.totalTimePlayed) },
       { label: t('statsScene.distance'), value: `${km} km` },
       { label: t('statsScene.highestEvolution'), value: s.highestEvolution || '---' },
