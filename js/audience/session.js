@@ -56,6 +56,7 @@
     getViewers() { return this._registry.waiting(); }
     getActiveViewers() { return this._registry.active(); }
     getStatus() { return { state: this._status.state, message: this._status.message }; }
+    getProviderSource() { return this._provider && this._provider.source || null; }
     isEnabled() { return this._recruitment.enabled; }
     getRecruitmentMode() { return this._recruitment.mode; }
     getRecruitmentCredits() { return this._recruitment.credits; }

@@ -1,7 +1,7 @@
 /* Audience companions are lightweight actors, never co-op players or enemy targets. */
 G.Companions = (() => {
   const roles = G.AudienceRoles.catalog;
-  const castLimit = 32, directHitLimit = 96;
+  const castLimit = 32, directHitLimit = 96, teleportDistance = 1200;
   let actors = [], runId = null, lastNow = 0, deferredCasts = 0, droppedDirectHits = 0, directHitsRemaining = 0;
 
   function hash(id) { let n = 2166136261; for (const c of String(id)) n = Math.imul(n ^ c.charCodeAt(0), 16777619); return n >>> 0; }
@@ -156,7 +156,11 @@ G.Companions = (() => {
     for (const a of actors) {
       const angle = a.slot * 2.3999632297, radius = 42 + Math.sqrt(a.slot) * 17;
       const tx = player.x + Math.cos(angle) * radius, ty = player.y + Math.sin(angle) * radius * 0.7;
-      const dx = tx - a.x, dy = ty - a.y, distance = Math.hypot(dx, dy);
+      let dx = tx - a.x, dy = ty - a.y, distance = Math.hypot(dx, dy);
+      if (distance > teleportDistance) {
+        a.x = tx; a.y = ty;
+        dx = 0; dy = 0; distance = 0;
+      }
       const step = Math.min(distance, (distance > 240 ? 500 : 155) * dt);
       if (distance > 1) { a.x += dx / distance * step; a.y += dy / distance * step; a.anim.dir = G.Sprites.dirFromAngle(Math.atan2(dy, dx)); }
       a.anim.loop(distance > 3 ? 'Walk' : 'Idle'); a.anim.update(dt);

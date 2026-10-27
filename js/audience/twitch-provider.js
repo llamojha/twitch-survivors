@@ -40,6 +40,7 @@
   class TwitchAudienceProvider extends BaseProvider {
     constructor(config, createSocket, validate, timers) {
       super();
+      this.source = 'twitch';
       this.channel = String(config.channel || '').trim().replace(/^#/, '').toLowerCase();
       this.username = String(config.username || '').trim().toLowerCase();
       this.token = String(config.token || '').trim().replace(/^oauth:/i, '');

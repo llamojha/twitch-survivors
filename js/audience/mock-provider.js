@@ -10,6 +10,7 @@
   class MockAudienceProvider extends BaseProvider {
     constructor() {
       super();
+      this.source = 'local';
       this.connected = false;
       this.nextViewer = 1;
     }

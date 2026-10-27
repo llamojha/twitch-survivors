@@ -26,6 +26,15 @@ test('recruitment-relative deadlines, due-only targeting, no catch-up volley', (
   G.Companions.update(0.016, pl, 1000); assert.equal(queries(), 2); assert.equal(G.Projectiles.count, 10);
   G.Companions.update(0.016, pl, 1000); assert.equal(queries(), 2);
 });
+test('companions snap back into formation after an arena teleport', () => {
+  const { G } = setup(), player = { x: 0, y: 0 };
+  G.Companions.startRun('teleport');
+  const actor = G.Companions.spawn({ viewerId: 'one' }, player, 0, 'storm-needle');
+  player.x = 12000; player.y = -8000;
+  G.Companions.update(0.016, player, 1);
+  assert.equal(actor.x, player.x + 42);
+  assert.equal(actor.y, player.y);
+});
 test('catalog exposes twelve inherited skills and rerolls deterministically per run', () => {
   const { G } = setup(), pl = { x: 0, y: 0 };
   assert.equal(G.Companions.roles.length, 12);

@@ -16,7 +16,9 @@ G.AudienceUI = (() => {
     $('aud-run-mode').onclick = () => {
       session.setRecruitmentMode(session.getRecruitmentMode() === 'level' ? 'join-all' : 'level');
     };
-    $('aud-run-add').onclick = async () => { await ensureMock(); mock.joinBatch(1); };
+    $('aud-run-add').onclick = () => {
+      if (session.getProviderSource() === 'local' && mock) mock.joinBatch(1);
+    };
     $('aud-mock-connect').onclick = connectMock;
     $('aud-mock-add').onclick = addMock;
     $('aud-mock-name').onkeydown = event => { if (event.key === 'Enter') addMock(); };
@@ -83,6 +85,8 @@ G.AudienceUI = (() => {
       ? waiting.slice(0, 20).map((v, i) => `<li><b>${i + 1}</b><span>${esc(v.displayName)}</span></li>`).join('')
       : '<li class="empty">No viewers waiting. Add a mock viewer or ask chat to type !join during the run.</li>';
     $('aud-run').classList.toggle('hidden', !inRun || !enabled);
+    $('aud-run-add').classList.toggle('hidden', session.getProviderSource() !== 'local');
+    $('aud-run-add').disabled = session.getProviderSource() !== 'local';
     $('aud-run-mode').textContent = mode === 'join-all' ? 'Join all: on' : `Level mode${session.getRecruitmentCredits() ? ` · ${session.getRecruitmentCredits()} credit` : ''}`;
     $('aud-run-count').textContent = `${active.length} active · ${waiting.length} waiting`;
     const leaders = G.Companions ? G.Companions.snapshot().sort((a, b) => b.damage - a.damage).slice(0, 3) : [];

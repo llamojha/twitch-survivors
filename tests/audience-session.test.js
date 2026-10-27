@@ -21,7 +21,9 @@ test('registry uses stable ids, preserves FIFO, and returns defensive snapshots'
 test('mock and session share normalized queue, duplicate protection, and run reset', async () => {
   const session = new AudienceSession();
   const mock = new MockAudienceProvider();
+  assert.equal(session.getProviderSource(), null);
   await session.setProvider(mock);
+  assert.equal(session.getProviderSource(), 'local');
   mock.join(' Ada ');
   mock.join('ADA');
   mock.joinBatch(3);
@@ -33,6 +35,8 @@ test('mock and session share normalized queue, duplicate protection, and run res
   assert.deepEqual(session.getViewers(), []);
   assert.equal(mock.join('Ada'), true);
   assert.deepEqual(session.getViewers(), [{ id: 'mock:ada', displayName: 'Ada' }]);
+  await session.disconnect();
+  assert.equal(session.getProviderSource(), null);
 });
 
 test('provider generations ignore stale events, statuses, and rejected promises', async () => {
