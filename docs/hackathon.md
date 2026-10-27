@@ -92,3 +92,98 @@ Implemented additive save schema v3 with distinct victories and defeats, includi
 ## 2026-10-25 — recruitment-relative attack staggering
 
 Fixed the PR review finding where companions recruited after the scene clock exceeded their cooldown attacked immediately and then synchronized by role. Each companion now anchors its stable viewer phase to its first active update and advances from that schedule in whole cooldown intervals, including after missed attack opportunities. Added focused coverage for late recruitment and retained cadence offsets. Existing assets remain unchanged.
+
+## 2026-10-25 — final asset overhaul specification
+
+Defined the final visual migration around a cohesive pixel-fantasy vertical slice, followed by terrain and all reachable player, companion, enemy and boss replacements. The plan preserves legacy gameplay/save IDs, map topology, combat and collision while mapping them to new fantasy presentation data and reusable archetypes. Existing skill effects are provisional: they may ship only with verified redistribution rights and no Pokémon-specific identity. The release build must exclude replaced Pokémon, terrain, artwork and unreferenced source-pack assets from `public/`; a planned audit will enforce that boundary. No assets or runtime code changed in this planning pass.
+
+## 2026-10-25 — corrected upstream and fork rework plan
+
+The user supplied screenshots from the intended foundation and identified `JPTER78/pokesurvivor` as the correct project. Investigation confirmed that the existing checkout came from a different similarly named repository, `giovanneluna/poke-survivors`. The current Phaser branch and PR are retained as a behavioral prototype rather than the release foundation.
+
+Inspected the correct repository and exact commit `b29708900da26b34e70d2dc07ad1659a719f4a78` in a temporary clone. Its source uses vanilla JavaScript, Canvas 2D, `window.G` IIFE modules, `dev.html` for source script order, and `tools/build.js` for production generation. Its baseline license explicitly grants MIT to the code while excluding SpriteCollab/Pokémon content from that grant. Current code after this commit uses PolyForm Noncommercial, so newer code is reference-only unless separately licensed.
+
+Replaced the active implementation and asset plans with a migration checklist for the correct fork. The plan preserves the proven audience behavior, ports Twitch early, excludes upstream cloud/social systems from the MVP, and keeps terrain/Pokémon replacement as the final implementation milestone. No application files, Git refs, remotes, commits, PRs, or deployments changed during this planning pass.
+
+## 2026-10-26 — fantasy asset provenance and art contract
+
+Recorded the first release-cleared visual dependency: Kenney Tiny Dungeon 1.0 under CC0, using its official packed 16×16 tilemap for fantasy actors. Added a provenance ledger with source, license, repository paths, modifications and SHA-256 checksums; retained the upstream license beside the image. Pixelify Sans remains documented under OFL 1.1.
+
+Defined the visual contract for actor scale, foot anchors, Y sorting, terrain, palette, lighting, crowd readability and UI. The current vertical slice includes an Arcblade hero, three viewer roles, reusable fantasy enemies, a boss mapping and three re-paletted core biomes. This documentation does not approve the remaining inherited Pokémon/SpriteCollab content: the complete inventory, purge, automated release audit and final browser regression remain required before release.
+
+
+## 2026-10-26 — fantasy release conversion completed locally
+
+Removed the inherited actor library and generated species datasets after replacing runtime actor loading with the fantasy presentation facade and compact roster. Rebranded visible runtime copy, the 30-minute boss, app icons, favicon, social preview, and the first three procedural biome palettes. Added a source/build asset audit that rejects legacy identity, prohibited asset paths, unapproved remote services, and missing required licenses.
+
+Validation: 19 Node tests passed; the 61-script exposed production bundle built; the asset audit passed. Production Chromium loaded only same-origin release files, recruited Carol through the local Join all path, recorded 176 damage and three kills in the final contribution table, and logged no errors after the prop-flash regression was fixed. Heroes, Recruit, and Upgrades also opened without errors. Desktop and 760×500 screenshots are saved in `docs/screenshots/`. Live Twitch acceptance, natural outcome paths, and sustained audience-capacity measurements remain open. No files were staged, committed, pushed, or published.
+
+## 2026-10-27 — audience-first UI and release cleanup
+
+Simplified the inherited collection-heavy shell around the Twitch MVP. The main menu now presents Play, Audience, Companions, Upgrades, Missions, and Settings; Recruit/Gacha and the ticket pill are removed from primary navigation. Reachable ticket drops and mission rewards convert to crowns. Added original pixel sword, audience, scroll, and rarity-rune icons, a purple fantasy/Twitch palette, and a compact Audience lobby with Local controls visible and Twitch credentials collapsed.
+
+Removed inherited static guide/collection pages, legacy service worker, old domain/SEO metadata, sponsor configuration, and deployable Firebase/Cloudflare infrastructure that targeted the upstream project. The release audit now checks served HTML, release metadata, forbidden paths, nested template strings, remote URLs, and required licenses.
+
+Validation: 21 Node tests passed; the 61-script exposed browser-test build, protected production build, and asset audit passed. Chromium at 1280×800 and 760×500 showed no UI overflow or console errors, Recruit/tickets were absent, and a Local Join all viewer entered a run. The protected build also opened Audience and started Play while keeping `window.G` private and loading only approved same-origin release files. A natural death at 0:41 preserved 317 damage and 10 kills; natural three-minute boss completion remains open. Capacity evidence supports 20 active companions. No files were staged, committed, pushed, or published.
+
+## 2026-10-27 — Twitch wordmarks and Survivor Forge
+
+Restyled both the menu wordmark and the large Press to start title with a brighter Twitch-purple fill, deep-purple pixel outline, and compact readability shadow. Rebuilt permanent upgrades as the Survivor Forge with thirteen original fantasy icons, four color-coded power schools, fantasy names, compact cards, and bilingual copy. Gameplay IDs, costs, effects, levels, and save data remain unchanged.
+
+Validation: 21 Node tests, protected production build, and release asset audit passed. Chromium rendered the title and Forge without clipping or viewport overflow at 1280×800 and 760×500. The protected build displayed all 13 upgrades, kept `window.G` private, and successfully purchased the first upgrade with no console errors. No files were staged, committed, pushed, or published.
+
+## 2026-10-27 — checklist reconciliation and final diff review
+
+Reconciled the implementation, migration, acceptance, art, and asset-overhaul checklists against recorded evidence. Natural death/restart, local audience lifecycle, capacity, final assets, responsive UI, release build/audit, screenshots, documentation, attribution, and the final diff review are marked complete. Combined checklist lines were split so the remaining live Twitch and natural boss checks no longer hide completed local work.
+
+The final diff review covered release identity, removed inherited assets and deployment infrastructure, generated output, credential patterns, and the latest logo/Survivor Forge changes. No credential material was found. The only release acceptance still open is live Twitch join/disconnect/reconnect on this correct fork and one natural boss/victory run. Historical pre-conversion baseline and deterministic-seed comparisons remain explicitly documented as non-blocking gaps. No files were staged, committed, pushed, or published.
+
+Follow-up identity cleanup replaced the remaining player-facing elemental labels with fantasy affinities. Arcblade now displays Wild and Spirit instead of Grass and Ghost. The underlying combat/save keys are unchanged. The 21 Node tests, protected build, release audit, and protected-browser menu check passed with no console errors.
+
+## 2026-10-27 — fixed neutral host
+
+Locked the MVP to Arcblade as one fixed, affinity-free host with only the neutral Tackle attack. Removed the Companions/Heroes entry point, shiny/rarity presentation, profile favorites, collection/evolution achievements, hero selector, move-slot bindings, and move-ban/two-move Forge purchases from reachable UI. Solo level rewards are stat-only; Audience mode continues to turn levels into viewer recruitment, making viewers the source of varied combat roles. A coin-funded multi-host unlock system is explicitly deferred.
+
+Validation: 23 Node tests passed. Chromium confirmed no character selector, no type chips, an 11-upgrade fixed-host Forge, Arcblade with `types: []`, one Tackle slot, rejection of a second move, stat-only host offers, and local Join all recruitment of Alice with zero console errors.
+
+## 2026-10-27 — Survivor Forge gameplay audit
+
+Audited all eleven reachable Forge cards against the fixed-host Audience MVP. Ten were already connected to live host, progression, pickup, or reward behavior. The level-card reroll was ineffective in the default Audience flow because levels recruit viewers instead of opening cards. Its stable `reroll` save key now powers Chat Momentum: each level adds 5% viewer-companion damage while preserving one additional reroll per level in Solo. The Forge now labels host-only effects, the run-end crown payout, pickup radius, and XP's level-recruitment benefit explicitly. Legacy move-slot and move-ban upgrades remain hidden and save-compatible.
+
+Validation: 30 Node tests passed, including projectile and direct-hit viewer scaling. Chromium purchased Chat Momentum, confirmed a 1.05 viewer-damage multiplier and retained Solo reroll, and rendered the Forge without horizontal overflow or console errors at 1280×720 and 760×500. Screenshots: `docs/screenshots/forge-upgrade-audit.png` and `docs/screenshots/forge-upgrade-audit-narrow.png`.
+
+## 2026-10-27 — Pause viewer DPS roster
+
+Added an Audience roster to the Pause screen. It lists every recruited viewer, their assigned skill, total damage, kills, and DPS. DPS uses time since that viewer was recruited rather than total run time, so late joins remain comparable. The end-of-run contribution list now includes the same DPS value.
+
+Validation: 31 Node tests passed, including active-time DPS accounting. Chromium recruited ten local viewers, observed live combat contributions, and verified the roster at 1280×720 and 760×500 with no horizontal overflow or console errors. Screenshots: `docs/screenshots/pause-viewer-dps.png` and `docs/screenshots/pause-viewer-dps-narrow.png`.
+
+## 2026-10-27 — twelve audience skills
+
+Expanded the viewer catalog from three generic roles to twelve fantasy skills adapted from inherited combat patterns: Firebolt, Storm Needle, Seeker, Stoneguard, Flame Fan, Starburst, Runeblade, Flame Orbit, Chain Spark, Meteorist, Rune Trapper, and Frost Channeler. The catalog covers aimed, piercing, homing, cone, radial, returning, orbiting, chained, meteor, mine, and beam attacks. Viewer assignment combines the run ID, world seed, and stable viewer ID, so duplicates cannot reroll a skill during a run while later runs can produce a new skill. Arcblade remains Tackle-only.
+
+All audience damage uses immutable viewer ownership. Direct chain, meteor, and beam hits bypass streamer rewards; short-lived orbits release projectile budget; slow can apply safely, while burn and poison remain disabled for viewer damage until delayed ticks can retain their source.
+
+Validation: 28 Node tests passed; the exposed and protected 62-script builds plus release asset audit passed. Chromium recruited eleven local viewers, recorded contributions from multiple skills, and exercised every role family for five seconds with zero console errors or dropped shots. The final review added per-frame cast/direct-hit budgets, wall-clamped beams, and travel-aware targeting. Screenshot: `docs/screenshots/audience-skills-12-role-catalog.png`.
+
+## 2026-10-27 — crown currency icon
+
+Replaced the inherited plain gold coin with an original Twitch Survivors currency mark: a gold crown set inside a Twitch-purple pixel token. The existing shared `coin` icon key remains stable, so menu balances, Forge costs, mission rewards, and result screens all receive the new design without changing currency behavior or save data.
+
+Validation: the icon definition passed syntax and 12×12 dimension checks; all 28 Node tests passed. Chromium rendered the token at its real menu size with no console errors. Screenshot: `docs/screenshots/crown-token-icon.png`.
+
+## 2026-10-27 — Bounty Board and streamer host identity
+
+Replaced the reachable legacy Missions and Achievements presentation with a Twitch Survivors Bounty Board. Daily bounties and weekly trials retain their stable mission IDs, progress counters, reroll behavior, and save compatibility, while using fantasy objectives, original UI icons, and crown-only reward presentation. The Milestones tab now contains 21 objectives backed by systems available in the MVP; collection, gacha, legendary roster, and group milestones were removed from the reachable definition set.
+
+Removed Arcblade from the player-facing host identity. Local mode displays the saved profile name, currently Streamer, and a connected Twitch setup displays the channel name. The menu portrait now opts into a centered canvas anchor while gameplay actors retain their foot anchor for collisions and Y sorting.
+
+Validation: 28 Node tests, protected production build, and release asset audit passed. Chromium rendered the centered portrait, Bounties, and Milestones with translated English copy and zero console errors. Screenshots: `docs/screenshots/centered-host-portrait.png`, `docs/screenshots/bounty-board.png`, and `docs/screenshots/bounty-board-milestones.png`.
+
+## 2026-10-27 — larger host and fantasy attack names
+
+Increased the centered menu host portrait from 4× to 5×. Replaced the remaining hardcoded Tackle label with the runtime fantasy name Blade Arc, which now appears consistently in the menu and run HUD.
+
+Completed the presentation mapping for all 64 retained base attacks and all 59 evolved attacks. Save data, combat behavior, VFX lookup, and internal move IDs remain unchanged; only player-facing names were replaced.
+
+Validation: the mapping inventory reported zero missing base or evolved names; 28 Node tests, protected production build, and release asset audit passed. Chromium verified Blade Arc in the menu and live HUD with zero console errors. Screenshots: `docs/screenshots/larger-host-blade-arc.png` and `docs/screenshots/blade-arc-in-run.png`.

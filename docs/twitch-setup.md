@@ -23,7 +23,7 @@ Official references:
 
 ## Step 2 live acceptance checklist
 
-Start the base game first, because starting a run clears its queue. Open Audience, choose Twitch chat, enter connection details locally and connect. Do not share or record the token.
+Open Audience, choose Twitch chat, enter connection details locally and connect. Do not share or record the token. You may queue viewers before starting: the provider remains connected and the waiting queue carries into the run, where viewers are admitted according to the selected recruitment mode.
 
 - [ ] Connected status names the intended channel.
 - [ ] Send !join in that channel; the viewer appears in the game queue.

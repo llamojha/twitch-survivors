@@ -1,48 +1,30 @@
-# Twitch Survivors migration
+# Twitch Survivors migration status
 
-## Goal and scope
-Adapt the cloned survivor game into Twitch Survivors while preserving its working combat and map foundation. The first pass establishes the fork, replaces the title screen, and verifies the inherited gameplay. It is not a completed asset conversion or a submission-ready build.
+## Corrected foundation
 
-Upstream: https://github.com/giovanneluna/poke-survivors
-Baseline: 188329a4eabe93072d3d18f740e4ce76ed4662da
+The intended game is `JPTER78/pokesurvivor`, not `giovanneluna/poke-survivors`. The release foundation will use exact commit `b29708900da26b34e70d2dc07ad1659a719f4a78`, the final revision whose game code is explicitly MIT licensed. Newer upstream code is reference-only. Third-party artwork and trademarks are outside the MIT grant and remain scheduled for final replacement.
 
-## First pass
-- [x] Clone upstream into the existing workspace, retaining history and MIT notice.
-- [x] Inspect scene flow, map generation, sprite provenance, and build.
-- [x] Replace `src/scenes/TitleScene.ts` with an original responsive title screen and preserve access to inherited gameplay/tools.
-- [x] Rename package/browser identity, add typecheck, pin dependencies, and isolate save/language storage.
-- [x] Change inherited automatic release workflow to manual dispatch until desktop branding is migrated.
-- [x] Record licensing boundaries and current limitations in README and third-party notices.
-- [x] Verify clean installation, strict typecheck, production build, title navigation, movement, enemies, and browser errors.
+The current Phaser branch remains intact as a working audience prototype. It proves local/Twitch normalization, queueing, level recruitment, Join all, autonomous companions, attribution, restart behavior, and attack staggering. Those behaviors will be ported into the correct fork's vanilla JavaScript/Canvas architecture.
 
-## Current specification and ordered TODO
+## Ordered milestones
 
-The latest user decisions supersede the initial bootstrap scope. See [product specification](product-spec.md) and [implementation plan](implementation-plan.md).
+- [x] M1: preserve the old branch/PR and establish an auditable branch from JPTER78 commit `b297089`.
+- [x] M2: verify the unmodified correct fork locally, disable cloud/social dependencies, isolate saves, rename the shell, and make Play start a default run.
+- [x] M3: port the shared audience session and local simulation.
+- [x] M4: port Twitch IRC input into the shared audience path. Real `!join` and reconnect acceptance remain under M8.
+- [x] M5: port named autonomous companions, a small varied role catalog, ownership, and staggered schedules.
+- [x] M6: port level-based recruitment, banked credits, and host-controlled Join all.
+- [x] M7: port contribution summaries and clean run lifecycle.
+- [ ] M8: complete natural-run, browser, Twitch, restart, and sustained-capacity acceptance.
+- [x] M9: replace terrain and every reachable Pokémon identity and asset; audit the release package.
+- [x] M10: complete final screenshots, documentation, attribution, local demo evidence, and final diff review.
 
-- [x] Make Play/Enter launch the inherited game directly with default character/map.
-- [ ] Step 1 (in progress): Local/Twitch input modes feeding one shared queue; verify locally and then with authorized real chat.
-- [ ] Step 2: recruit one real viewer as a named fighting companion using an existing skill.
-- [ ] Step 3: default level recruitment, host Join all, small varied random role catalog.
-- [x] Step 4: visible contributions and clean local restart; live reconnect acceptance remains in Twitch Step 2.
-- [ ] Step 5: local gameplay implementation complete; finish natural boss-sequence and sustained-capacity acceptance.
-- [ ] Step 6 (FINAL implementation task): replace release assets/branding and capture actual gameplay for the title.
-- [ ] After Step 6: final-art regression, demo and release preparation.
-- [ ] Post-MVP: expand toward the full inherited content catalog and larger audiences.
+The file-level checklist, architecture, acceptance criteria, risks, and rollback plan are authoritative in [implementation-plan.md](implementation-plan.md).
 
-The previous M0–M8 order is superseded: real Twitch is first, not after mocks, content conversion or UI work. Keep all current assets during functional development. Preserve inherited maps/bosses/progression; exhaustive audience compatibility is not required before proving the live core loop. See the implementation plan for file-level tasks and acceptance criteria.
+## Immediate next action
 
-## Validation and rollback
-Implement changes before adding tests. Use a clean npm install, typecheck, build, and a real Chromium gameplay smoke test. Keep changes uncommitted and preserve the original upstream history; no pushes or publishing. Review changes against the recorded baseline without destructive Git operations.
+Finish M8 acceptance evidence: complete the user-assisted live Twitch join/disconnect/reconnect check and one natural boss/victory path. Natural death/restart, sustained capacity, the converted release build, asset audit, final diff review, and desktop/narrow local browser loop pass. Commits, pushes, PR changes, or publication require the user's explicit instruction at execution time.
 
-## Risks
-The inherited project bundles third-party game artwork. This checkout is a migration workspace, not cleared for redistribution as an original hackathon entry. Existing map systems can remain, but map artwork needs its own provenance decision. The upstream project includes gameplay outside the original bootstrap scope; do not expand it during migration. Dependency fixes should remain within existing major versions where possible and be validated by build and browser testing.
+## 2026-10-26 asset milestone update
 
-
-## Current execution TODO — 2026-10-24
-The six-step order and acceptance checkboxes in [implementation-plan.md](implementation-plan.md) supersede earlier milestone sequencing above.
-- [x] 1. Implement local and Twitch audience inputs with one shared queue.
-- [ ] 2. Live Twitch acceptance deferred by user on 2026-10-25; local and simulated protocol checks pass.
-- [x] 3. Named mock companions with Scout, Volley and Piercer projectile roles.
-- [x] 4. Implement level-based and host-controlled Join all recruitment locally; live Twitch confirmation deferred.
-- [ ] 5. Contributions, restart, outcome persistence, evolution and scaling controls implemented; full natural victory, capacity declaration and live tests remain.
-- [ ] 6. Replace assets last, then verify release.
+M9 is complete locally. The release uses the CC0 actor sheet, fantasy roster, centralized presentation mapping, converted terrain palette, and original branding. The inherited actor directory and generated species metadata are gone. The asset audit passes, the production bundle is regenerated, and desktop plus narrow browser checks show a named mock companion fighting without console errors.
