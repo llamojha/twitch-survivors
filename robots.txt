@@ -1,0 +1,6 @@
+# Twitch Survivors
+User-agent: *
+Allow: /
+Disallow: /tools/
+Disallow: /docs/
+Disallow: /dev.html

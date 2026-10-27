@@ -1,6 +1,11 @@
+PokéSurvivor — licencias
+
+1) CÓDIGO (todo lo que hay en js/, css/, index.html, tools/ y la música de
+   js/data/music.js): licencia MIT.
+
 MIT License
 
-Copyright (c) 2024-2026 Giovanne Luna
+Copyright (c) 2026 JPTER78
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +24,17 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+2) CONTENIDO DE TERCEROS (NO cubierto por la licencia MIT):
+
+- assets/pokemon/: sprites de SpriteCollab (https://github.com/PMDCollab/SpriteCollab),
+  licencia CC BY-NC 4.0. Uso NO comercial y con atribución; los autores están
+  en CREDITS.md.
+- assets/fonts/: Pixelify Sans, SIL Open Font License 1.1 (assets/fonts/OFL.txt).
+- js/data/pokedex.js: datos obtenidos de PokeAPI (https://pokeapi.co/).
+
+3) MARCAS
+
+Pokémon y todos los nombres y personajes relacionados son marcas y propiedad
+de Nintendo, Creatures Inc., GAME FREAK y The Pokémon Company. Este es un
+proyecto de fan sin ánimo de lucro, no afiliado ni aprobado por ellos.

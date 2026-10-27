@@ -1,19 +1,30 @@
-# Third-party notices and asset migration
+# Third-party notices
 
-## Upstream code
+## PokéSurvivor code baseline
 
-Source: https://github.com/giovanneluna/poke-survivors
-Cloned baseline: 188329a4eabe93072d3d18f740e4ce76ed4662da
-Copyright (c) 2024-2026 Giovanne Luna. MIT License.
+Twitch Survivors is based on `JPTER78/pokesurvivor` at commit `b29708900da26b34e70d2dc07ad1659a719f4a78`.
 
-The full upstream notice is retained verbatim in LICENSE. The repository is a derivative work, not an independent from-scratch implementation. Inherited game systems must not be represented as new hackathon work.
+Copyright © 2026 JPTER78. The code at that pinned revision is provided under the MIT License. The original notice is preserved in `LICENSE`.
 
-## Assets: not cleared by the code license
+Code published upstream after the pinned revision is not part of this fork unless separately documented.
 
-Upstream documentation identifies Pokémon sprites/artwork/items from PMDCollab, PokeAPI, and pokemonAutoChess. The asset loader also references other game-derived effects and environment art. Tile themes include Emerald, FireRed, and Mystery Dungeon. No independent grant covering the underlying game IP was established in this pass.
+## Pixelify Sans
 
-These files remain in the migration checkout and are copied into the Vite build. They are not approved original Twitch Survivors assets. The migration must replace them or establish applicable permission before distribution/submission. Keeping map generation and layout does not require keeping the tile artwork.
+The inherited Pixelify Sans font files under `assets/fonts/` are provided under the SIL Open Font License 1.1. The font notice is preserved at `assets/fonts/OFL.txt`.
 
-## New work
+## Kenney Tiny Dungeon
 
-The title-screen geometric preview is drawn directly with Phaser graphics and uses no external artwork. Package dependencies retain their respective upstream license files in their installed packages. The project root MIT notice must remain with redistributed substantial portions of the upstream code.
+The fantasy actor presentation uses selected 16×16 cells from Kenney's **Tiny Dungeon 1.0** packed tilemap:
+
+- Creator/distributor: Kenney
+- Primary source: https://kenney.nl/assets/tiny-dungeon
+- License: Creative Commons Zero 1.0, https://creativecommons.org/publicdomain/zero/1.0/
+- Repository files: `assets/fantasy/kenney-tiny-dungeon/tilemap_packed.png` and the preserved upstream notice at `assets/fantasy/kenney-tiny-dungeon/LICENSE.txt`
+
+CC0 does not require attribution. Twitch Survivors credits Kenney voluntarily. Runtime code crops actor cells from the packed sheet and renders them with nearest-neighbor scaling; the stored PNG is otherwise unmodified. Full provenance is recorded in `docs/asset-provenance.md`.
+
+## Removed baseline content
+
+The pinned baseline included a franchise-specific roster, PokéAPI-derived data, and SpriteCollab artwork licensed separately from the MIT code. Twitch Survivors does not ship those actor files or generated datasets. The release audit rejects their paths and visible identity if they return.
+
+An asset is approved for the release only when it is listed in `docs/asset-provenance.md`.

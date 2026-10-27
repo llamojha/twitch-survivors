@@ -1,30 +1,16 @@
 {
   "name": "twitch-survivors",
   "version": "0.1.0",
-  "description": "Twitch Survivors — audience-driven survivor game (migration in progress)",
   "private": true,
-  "type": "module",
+  "description": "Audience-driven browser survivor game for Twitch",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "tauri": "tauri",
-    "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build",
-    "ralph": "bash scripts/ralph/ralph.sh --tool claude",
-    "ralph:20": "bash scripts/ralph/ralph.sh --tool claude 20",
-    "typecheck": "tsc --noEmit",
-    "test": "node scripts/test-audience.mjs"
+    "test": "node --test tests/*.test.js",
+    "audit:assets": "node tools/audit-release-assets.js",
+    "build": "node tools/build.js --sin-seo",
+    "build:test": "node tools/build.js --expose --sin-seo",
+    "serve": "python3 -m http.server 4173 --bind 127.0.0.1"
   },
-  "dependencies": {
-    "@tauri-apps/plugin-shell": "2.3.5",
-    "phaser": "3.90.0"
-  },
-  "devDependencies": {
-    "@tauri-apps/cli": "2.10.0",
-    "playwright": "1.58.2",
-    "sharp": "0.35.5",
-    "typescript": "5.9.3",
-    "vite": "6.4.5"
+  "engines": {
+    "node": ">=22"
   }
 }
