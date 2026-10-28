@@ -24,7 +24,7 @@ G.MenuUI = (() => {
     document.querySelectorAll('[data-back]').forEach(b => { b.onclick = open; });
     G.Social.on(() => { if (G.UI.isOpen('scr-menu')) socialLine(); });
     $('btn-logout').onclick = () => {
-      if (G.DB.guest && !confirm('Eres invitado: se perderá todo el progreso. ¿Salir?')) return;
+      if (G.DB.guest && !confirm('You are playing as a guest. All progress will be lost. Leave?')) return;
       G.Audio.music(null);
       G.DB.logout().then(() => G.Flow.toLogin());
     };
@@ -46,15 +46,15 @@ G.MenuUI = (() => {
 
     const st = s.stats;
     $('menu-stats').innerHTML =
-      `Runs <b style="color:#fff">${st.runs}</b> · Mejor tiempo <b style="color:#fff">${G.U.mmss(st.bestTime)}</b><br>` +
-      `Mejor nivel <b style="color:#fff">${st.bestLevel}</b> · Derrotados <b style="color:#fff">${st.totalKills.toLocaleString('es')}</b>` +
-      (G.DB.guest ? '<br><span style="color:#ffb0b8">Modo invitado: no se guarda</span>' : '');
+      `Runs <b style="color:#fff">${st.runs}</b> · Best time <b style="color:#fff">${G.U.mmss(st.bestTime)}</b><br>` +
+      `Best level <b style="color:#fff">${st.bestLevel}</b> · Defeated <b style="color:#fff">${st.totalKills.toLocaleString('en-US')}</b>` +
+      (G.DB.guest ? '<br><span style="color:#ffb0b8">Guest mode: progress is not saved</span>' : '');
 
     socialLine();
     // Premios de misiones por recoger.
     G.Progress.checkAch();
     const pend = G.Progress.pending();
-    $('menu-goals-sub').textContent = pend ? pend + (pend === 1 ? ' recompensa lista' : ' recompensas listas') : 'Retos diarios y semanales';
+    $('menu-goals-sub').textContent = pend ? pend + (pend === 1 ? ' reward ready' : ' rewards ready') : 'Daily and weekly challenges';
     $('menu-goals-sub').classList.toggle('gold', pend > 0);
     // Con cuenta en la nube: amigos en línea, invitaciones y (una vez) el apodo.
     if (G.DB.online && !G.Social.started) {
@@ -70,7 +70,7 @@ G.MenuUI = (() => {
   function socialLine() {
     const room = G.Social.room;
     const play = document.querySelector('#scr-menu [data-go=play] small');
-    if (play) play.textContent = room ? 'Volver a tu sala (' + room.members.length + '/' + G.Social.MAX_PLAYERS + ')' : 'Entra en la mazmorra';
+    if (play) play.textContent = room ? 'Return to your room (' + room.members.length + '/' + G.Social.MAX_PLAYERS + ')' : 'Enter the dungeon';
     const fr = G.Social.friends;
     const on = fr.filter(f => f.status === 'ok' && f.online).length;
     const req = fr.filter(f => f.status === 'in').length;

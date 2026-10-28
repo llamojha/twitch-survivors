@@ -2,6 +2,7 @@
 G.AudienceUI = (() => {
   const $ = G.UI.$;
   const session = G.audienceSession;
+  const mockEnabled = !!G.Features.mockAudience;
   let mock = null;
   let twitchHostName = '';
 
@@ -16,21 +17,25 @@ G.AudienceUI = (() => {
     $('aud-run-mode').onclick = () => {
       session.setRecruitmentMode(session.getRecruitmentMode() === 'level' ? 'join-all' : 'level');
     };
-    $('aud-run-add').onclick = () => {
-      if (session.getProviderSource() === 'local' && mock) mock.joinBatch(1);
-    };
-    $('aud-mock-connect').onclick = connectMock;
-    $('aud-mock-add').onclick = addMock;
-    $('aud-mock-name').onkeydown = event => { if (event.key === 'Enter') addMock(); };
-    $('aud-mock-ten').onclick = async () => { await ensureMock(); mock.joinBatch(10); };
+    $('aud-mock-panel').classList.toggle('hidden', !mockEnabled);
+    if (mockEnabled) {
+      $('aud-run-add').onclick = () => {
+        if (session.getProviderSource() === 'local' && mock) mock.joinBatch(1);
+      };
+      $('aud-mock-connect').onclick = connectMock;
+      $('aud-mock-add').onclick = addMock;
+      $('aud-mock-name').onkeydown = event => { if (event.key === 'Enter') addMock(); };
+      $('aud-mock-ten').onclick = async () => { const provider = await ensureMock(); provider.joinBatch(10); };
+    }
     $('aud-twitch-connect').onclick = connectTwitch;
     $('aud-disconnect').onclick = () => { twitchHostName = ''; session.disconnect(); };
     session.onChange(render);
     session.setEnabled(true);
-    connectMock();
+    if (mockEnabled) connectMock();
   }
 
   async function ensureMock() {
+    if (!mockEnabled) throw new Error('Mock audience is disabled in this build.');
     if (!mock) mock = new G.MockAudienceProvider();
     if (!mock.connected) await session.setProvider(mock);
     return mock;
@@ -83,10 +88,11 @@ G.AudienceUI = (() => {
     $('aud-counts').textContent = `${active.length} active · ${waiting.length} waiting`;
     $('aud-queue').innerHTML = waiting.length
       ? waiting.slice(0, 20).map((v, i) => `<li><b>${i + 1}</b><span>${esc(v.displayName)}</span></li>`).join('')
-      : '<li class="empty">No viewers waiting. Add a mock viewer or ask chat to type !join during the run.</li>';
+      : `<li class="empty">${mockEnabled ? 'No viewers waiting. Add a mock viewer or ask chat to type !join during the run.' : 'No viewers waiting. Ask chat to type !join during the run.'}</li>`;
     $('aud-run').classList.toggle('hidden', !inRun || !enabled);
-    $('aud-run-add').classList.toggle('hidden', session.getProviderSource() !== 'local');
-    $('aud-run-add').disabled = session.getProviderSource() !== 'local';
+    const canMockJoin = mockEnabled && session.getProviderSource() === 'local';
+    $('aud-run-add').classList.toggle('hidden', !canMockJoin);
+    $('aud-run-add').disabled = !canMockJoin;
     $('aud-run-mode').textContent = mode === 'join-all' ? 'Join all: on' : `Level mode${session.getRecruitmentCredits() ? ` · ${session.getRecruitmentCredits()} credit` : ''}`;
     $('aud-run-count').textContent = `${active.length} active · ${waiting.length} waiting`;
     const leaders = G.Companions ? G.Companions.snapshot().sort((a, b) => b.damage - a.damage).slice(0, 3) : [];

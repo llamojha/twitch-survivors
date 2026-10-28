@@ -512,13 +512,13 @@ G.Judgment = (() => {
       // El título, letra a letra, debajo de la rueda.
       const size = Math.round(G.U.clamp(Math.min(w / 13, h / 9), 24, 64));
       const ty = cy + R + size * 1.15;
-      title(ctx, 'LA SENTENCIA', cx, ty, size, T_TITLE, a);
-      title(ctx, 'DEL TIRANO DEL RIFT', cx, ty + size * 0.95, Math.round(size * 0.8), T_TITLE + 0.75, a);
+      title(ctx, 'THE JUDGMENT', cx, ty, size, T_TITLE, a);
+      title(ctx, 'OF THE RIFT TYRANT', cx, ty + size * 0.95, Math.round(size * 0.8), T_TITLE + 0.75, a);
       ctx.globalAlpha = a * G.U.clamp((t - T_TITLE - 1.6) / 0.6, 0, 1);
       ctx.font = F(700, Math.round(size * 0.32));
       ctx.textAlign = 'center';
       ctx.fillStyle = '#f3e2b0';
-      ctx.fillText('El tiempo se ha agotado…', cx, ty + size * 1.7);
+      ctx.fillText('Time has run out…', cx, ty + size * 1.7);
     }
     // Franjas negras de cine durante la bajada.
     if (t > T_PORT) {
@@ -537,13 +537,13 @@ G.Judgment = (() => {
       ctx.globalAlpha = b;
       ctx.translate(w / 2, h * 0.24);
       ctx.scale(pop, pop);
-      goldText(ctx, '¡EL TIRANO DEL RIFT HA DESCENDIDO!', 0, 0, size);
+      goldText(ctx, 'THE RIFT TYRANT HAS DESCENDED!', 0, 0, size);
       ctx.restore();
       ctx.globalAlpha = b;
       ctx.font = F(700, Math.round(size * 0.45));
       ctx.textAlign = 'center';
       ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(0,0,0,.8)';
-      const sub = 'Es invencible: huye y aguanta todo lo que puedas';
+      const sub = 'It is invincible: run and survive as long as you can';
       ctx.strokeText(sub, w / 2, h * 0.24 + size * 1.1);
       ctx.fillStyle = '#ffe9b0';
       ctx.fillText(sub, w / 2, h * 0.24 + size * 1.1);
@@ -553,7 +553,7 @@ G.Judgment = (() => {
       ctx.font = F(700, 11);
       ctx.textAlign = 'right';
       ctx.fillStyle = '#f3e2b0';
-      ctx.fillText(G.Touch.active ? 'Toca la pantalla para saltar' : 'Pulsa Espacio para saltar', w - 16, h - 14);
+      ctx.fillText(G.Touch.active ? 'Tap to skip' : 'Press Space to skip', w - 16, h - 14);
       // Toda la pantalla es un botón (móvil y ratón).
       G.Touch.addButton(0, 0, w, h, skip, 0);
     }
@@ -621,7 +621,7 @@ G.Judgment = (() => {
     ctx.textAlign = 'center';
     ctx.font = F(800, 12);
     ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(0,0,0,.7)';
-    const txt = 'SENTENCIA · ' + G.U.mmss(arenaT) + ' · JEFES ' + downs;
+    const txt = 'JUDGMENT · ' + G.U.mmss(arenaT) + ' · BOSSES ' + downs;
     ctx.strokeText(txt, w / 2, boss ? 98 : 76);
     ctx.fillStyle = GOLD;
     ctx.fillText(txt, w / 2, boss ? 98 : 76);
@@ -646,7 +646,7 @@ G.Judgment = (() => {
       ctx.closePath(); ctx.fill();
       ctx.font = F(800, 11);
       ctx.textAlign = Math.cos(an) > 0.3 ? 'right' : Math.cos(an) < -0.3 ? 'left' : 'center';
-      const lbl = 'TIRANO DEL RIFT · ' + Math.round(G.U.dist(pl.x, pl.y, A.x, A.y) / 32) + ' m';
+      const lbl = 'RIFT TYRANT · ' + Math.round(G.U.dist(pl.x, pl.y, A.x, A.y) / 32) + ' m';
       ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(0,0,0,.85)';
       ctx.strokeText(lbl, -Math.cos(an) * 30, -Math.sin(an) * 26 + 4);
       ctx.fillStyle = GOLD;

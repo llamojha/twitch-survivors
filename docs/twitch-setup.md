@@ -11,6 +11,8 @@ The connection requests Twitch tags, commands, and membership capabilities and a
 
 The provider emits normalized events only. Queue deduplication, capacity, and gameplay spawning belong to the shared consumer, so repeated chat messages and mock events use the same rules. Channel presence alone does not enqueue a viewer.
 
+Local mock controls are a preview-only feature. Vercel preview deployments enable them automatically through `VERCEL_ENV=preview`; production and ordinary local/release builds keep them off. For a local preview build, run `npm run build:preview`. `TS_ENABLE_MOCK_AUDIENCE=1` or `0` explicitly overrides the deployment default during a build.
+
 Verification covers simulated WebSockets and tagged IRC messages. Live Twitch verification requires a consenting channel and valid credentials and has not been performed by automated tests.
 
 Official references:
@@ -29,7 +31,7 @@ Open Audience, choose Twitch chat, enter connection details locally and connect.
 - [ ] Send !join in that channel; the viewer appears in the game queue.
 - [ ] Send !join again from the same account; queue count stays unchanged.
 - [ ] If available, a second account joins and appears after the first.
-- [ ] Switch to Local simulation; the old queue clears and Alice can join without Twitch credentials.
+- [ ] On a preview build, switch to Local simulation; the old queue clears and Alice can join without Twitch credentials.
 - [ ] Record date, browser, observed counts and pass/fail, without credentials or unrelated chat contents.
 
 Automated integration coverage exercises both providers through the same session. This is protocol simulation, not evidence of real Twitch delivery. Live acceptance is still pending.

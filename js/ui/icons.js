@@ -67,6 +67,45 @@ G.Icons = (() => {
     upgSeal: { pal: { r: '#ff5f6d', p: '#a970ff', q: '#6840a8', y: '#ffd23f' }, rows: [
       '....kkkk....', '..kkppppkk..', '.kpppyyppqk.', 'kppykppkyppk', 'kpppkyykppqk', 'kpyykppkyyqk',
       'kpyykppkyyqk', 'kpppkyykppqk', 'kppykppkyppk', '.kpppyyppqk.', '..kkqqqqkk..', '....kkkk....'] },
+    atkBladeArc: { pal: { p: '#9146ff', q: '#5b2a91', c: '#9fe7ff', w: '#fff' }, rows: [
+      '..........kk', '.........kck', '........kcwk', '.......kcwk.', '......kcwk..', '...kkkcwk...',
+      '..kppkkk....', '.kppqk......', '..kqk.......', '.kk.........', '............', '............'] },
+    atkFirebolt: { pal: { p: '#9146ff', o: '#ff7043', y: '#ffd23f', w: '#fff3ca' }, rows: [
+      '............', '.......kk...', '......kook..', '...kkkooyk..', '.kkpoooyyk..', 'kppoooyyyyk.',
+      '.kkpoooyyk..', '...kkkooyk..', '......kook..', '.......kk...', '............', '............'] },
+    atkStormNeedle: { pal: { p: '#9146ff', y: '#ffe16a', w: '#fff' }, rows: [
+      '........k...', '.......kyk..', '......kyk...', '....kkyk....', '...kyyk.....', '.kkyyyyykk..',
+      '..kkyykk....', '...kyk......', '..kyk.......', '..kk........', '............', '............'] },
+    atkSeeker: { pal: { p: '#a970ff', q: '#5b2a91', c: '#9fe7ff', w: '#fff' }, rows: [
+      '....kkkk....', '..kkppppkk..', '.kppqkkqppk.', 'kppkwppwkppk', 'kpqkcppckpqk', 'kpqkwppwkpqk',
+      'kppqkkkkqppk', '.kppppppppk.', '..kkqqqqkk..', '....kkkk....', '............', '............'] },
+    atkStoneguard: { pal: { p: '#9146ff', r: '#c7aa78', d: '#6b5c52', w: '#f3e3c6' }, rows: [
+      '............', '.....kk.....', '...kkrkk....', '..krrwrrk...', '.krrdrrrwk..', 'krrrddrrrrk.',
+      'krrdrrdrrrk.', '.krrrddrrk..', '..krrrrrk...', '...kddkk....', '....kk......', '............'] },
+    atkFlameFan: { pal: { p: '#9146ff', o: '#ff7043', y: '#ffd23f', w: '#fff3ca' }, rows: [
+      'k...........', 'kok....k....', 'koook..kok..', '.kooookoook.', '..kooyoooook', '...kyyyooook',
+      '..kooyoooook', '.kooookoook.', 'koook..kok..', 'kok....k....', 'k...........', '............'] },
+    atkStarburst: { pal: { p: '#9146ff', o: '#ff8b4d', y: '#ffd23f', w: '#fff' }, rows: [
+      '.....kk.....', '..k..kyk..k.', '.kyk.kyk.kyk', '..kykyyykyk.', '...kyyyykk..', 'kkyyywyyyykk',
+      'kkyyyywyyykk', '..kkyyyykk..', '.kykyyykyk..', 'kyk.kyk.kyk.', '.k..kyk..k..', '.....kk.....'] },
+    atkRuneblade: { pal: { p: '#9146ff', g: '#85e3a4', d: '#2f9a52', w: '#fff' }, rows: [
+      '........kk..', '......kkgwk.', '....kkgggdk.', '..kkggggdk..', '.kgggggdk...', 'kggggddk....',
+      '.kggddk.....', '..kddk......', '...kk.......', '..kppk......', '.kppqk......', '..kk........'] },
+    atkFlameOrbit: { pal: { p: '#9146ff', o: '#ff6f61', y: '#ffd23f', w: '#fff3ca' }, rows: [
+      '...kkk......', '.kkoookk....', 'kooyyyook...', 'koyk.kyoook.', 'koy...kyyook', '.k....kyoook',
+      'koy...kyyook', 'koyk.kyoook.', 'kooyyyook...', '.kkoookk....', '...kkk......', '............'] },
+    atkChainSpark: { pal: { p: '#9146ff', y: '#fff176', w: '#fff' }, rows: [
+      'kk.......kk.', 'kyk.....kyk.', '.kyk...kyk..', '..kyk.kyk...', '...kykyk....', '....kyk.....',
+      '...kykyk....', '..kyk.kyk...', '.kyk...kyk..', 'kyk.....kyk.', 'kk.......kk.', '............'] },
+    atkMeteor: { pal: { p: '#9146ff', r: '#d2b48c', d: '#6b5c52', o: '#ff8b4d' }, rows: [
+      '.........kk.', '.......kkok.', '.....kkoook.', '...kkooook..', '..kooookk...', '.krrrkk.....',
+      'krrdrrk.....', 'krrrddk.....', '.krrrk......', '..kkk.......', '............', '............'] },
+    atkRuneTrap: { pal: { p: '#a970ff', q: '#5b2a91', g: '#b9df78', w: '#fff' }, rows: [
+      'k....k....k.', '.k..kgk..k..', '..kkgggkk...', '...kgwgk....', 'kkggpppggkk.', '.kgpqqqpgk..',
+      '.kgpqpqpgk..', 'kkggpppggkk.', '...kgwgk....', '..kkgggkk...', '.k..kgk..k..', 'k....k....k.'] },
+    atkFrostBeam: { pal: { p: '#9146ff', c: '#9eeaff', b: '#318fb0', w: '#fff' }, rows: [
+      '...k...k....', '...ck.kc....', 'k..kckck..k.', '.ckkccckkc..', '..kccwcck...', 'kkccwwwcckk.',
+      '..kccwcck...', '.ckkccckkc..', 'k..kckck..k.', '...ck.kc....', '...k...k....', '............'] },
     gear: { pal: { g: '#c9d6ff', d: '#7f93c9' }, rows: [
       '....kkkk....', '.kk.kggk.kk.', '.kgkkggkkgk.', '..kggggggk..', 'kkggkkkkggkk', 'kgggk..kgddk',
       'kgggk..kgddk', 'kkggkkkkddkk', '..kggddddk..', '.kgkkddkkdk.', '.kk.kddk.kk.', '....kkkk....'] },
@@ -237,6 +276,16 @@ G.Icons = (() => {
   UI.rune4 = { rows: UI.star.rows, pal: { y: '#a970ff', o: '#6840a8', w: '#efdfff' } };
   UI.rune5 = { rows: UI.star.rows, pal: { y: '#ffd23f', o: '#c08a10', w: '#fff3b0' } };
 
+  // Release-reachable attacks get a bespoke fantasy glyph. Other retained
+  // move IDs still use the generic type/pattern emblem as a safe fallback.
+  const MOVE_ICON = Object.freeze({
+    tackle: 'atkBladeArc', ember: 'atkFirebolt', 'thunder-shock': 'atkStormNeedle',
+    confusion: 'atkSeeker', 'rock-throw': 'atkStoneguard', flamethrower: 'atkFlameFan',
+    'heat-wave': 'atkStarburst', 'razor-leaf': 'atkRuneblade', 'fire-spin': 'atkFlameOrbit',
+    thunderbolt: 'atkChainSpark', 'rock-slide': 'atkMeteor', 'string-shot': 'atkRuneTrap',
+    'ice-beam': 'atkFrostBeam'
+  });
+
   // ---------------- glifos de tipo (8×8, blancos sobre el emblema) ----------------
   const TYPE_GLYPH = {
     normal:   ['..####..', '.#....#.', '#......#', '#..##..#', '#..##..#', '#......#', '.#....#.', '..####..'],
@@ -349,8 +398,9 @@ G.Icons = (() => {
     let cv = cache.get(name);
     if (cv) return cv;
     if (name.startsWith('move:')) {
-      const m = G.Moves.BY_ID[name.slice(5)];
-      cv = emblem(m ? m.type : 'normal', m ? m.kind : null);
+      const id = name.slice(5), custom = MOVE_ICON[id];
+      const m = G.Moves.BY_ID[id];
+      cv = custom ? fromRows(UI[custom]) : emblem(m ? m.type : 'normal', m ? m.kind : null);
     } else if (name.startsWith('type:')) {
       cv = emblem(name.slice(5));
     } else {
@@ -474,5 +524,5 @@ G.Icons = (() => {
     r.setProperty('--ico-cursor', `url("${url('cursor')}")`);
   }
 
-  return { canvas, url, html, draw, twinkle, rarity, RARITY_BALL, installCss, UI, TYPE_GLYPH };
+  return { canvas, url, html, draw, twinkle, rarity, RARITY_BALL, installCss, UI, TYPE_GLYPH, MOVE_ICON };
 })();

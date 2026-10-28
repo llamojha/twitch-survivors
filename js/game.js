@@ -223,7 +223,7 @@ G.Game = (() => {
     over(d) {
       if (d) Object.assign(pl, { kills: d.ki, bosses: d.bo, coins: d.co, level: Math.max(pl.level, d.lv || 1), t1: d.t1 || pl.t1, t10: d.t10 || pl.t10 });
       if (d && d.t) time = d.t;
-      if (d && d.why === 'host') G.UI.toast('El anfitrión ha terminado la partida', 3200);
+      if (d && d.why === 'host') G.UI.toast('The host ended the run', 3200);
       endRun(!(d && d.why === 'host'));
     },
     lost(msg) { G.UI.toast(msg, 3600); endRun(false); },
@@ -237,7 +237,7 @@ G.Game = (() => {
         if (state === 'playing') state = 'held';
         if (pl && pl.bonds > 0) offerBond(true);      // si tú también tienes vínculo, eliges a la vez
         const others = holdBy.filter(n => n !== (G.Social.me && G.Social.me.name) && n !== 'Tú');
-        if (!mine && others.length) G.Spawner.say('Pausa: ' + others.join(', ') + ' ' + (others.length > 1 ? 'están eligiendo…' : 'está eligiendo…'), 999, true);
+        if (!mine && others.length) G.Spawner.say('Paused: ' + others.join(', ') + (others.length > 1 ? ' are choosing…' : ' is choosing…'), 999, true);
         else if (!others.length) G.Spawner.say(awayBy ? awayText() : '', awayBy ? 999 : 0, true);   // sólo tú: sin aviso viejo
       } else {
         if (state === 'held' && !awayBy) state = 'playing';
@@ -257,7 +257,7 @@ G.Game = (() => {
     }
   };
   let awayBy = null;
-  const awayText = () => 'Pausa: esperando a ' + awayBy + ' (anfitrión)…';
+  const awayText = () => 'Paused: waiting for ' + awayBy + ' (host)…';
 
   /** Has llevado a casa a un Pokémon perdido y se une a ti (events.js). */
   G.onRescue = (dex, name) => {
@@ -265,7 +265,7 @@ G.Game = (() => {
     const isNew = !G.DB.owns(dex);
     if (isNew) { G.DB.grant(dex, 'rescue'); G.DB.commit(true); }
     else pl.coins += 150;
-    G.Spawner.say(isNew ? '¡' + name + ' se une a tu equipo!' : '¡' + name + ' te da las gracias! (+150 monedas, ya lo tenías)', 4);
+    G.Spawner.say(isNew ? name + ' joined your team!' : name + ' thanks you! (+150 coins; already recruited)', 4);
     G.Audio.sfx('shinyGet');
   };
 
@@ -277,7 +277,7 @@ G.Game = (() => {
     G.DB.save.stats.shinies++;
     G.DB.commit(true);
     caught.push({ dex: e.dex, isNew });
-    G.Spawner.say(isNew ? '¡Has reclutado una variante rara de ' + e.name + '!' : '¡Otra variante rara de ' + e.name + '! (+300 coronas)', 4);
+    G.Spawner.say(isNew ? 'You recruited a rare ' + e.name + '!' : 'Another rare ' + e.name + '! (+300 crowns)', 4);
     if (!isNew) pl.coins += 300;
     G.Audio.sfx('shinyGet');
   };
@@ -405,7 +405,7 @@ G.Game = (() => {
     if (['scr-bond', 'scr-pause', 'scr-item', 'scr-levelup'].some(G.UI.isOpen)) return;
     const opt = pl.bondOptions();
     if (!opt) {
-      if (!quiet) G.Spawner.say('Guardas el vínculo: aprende otro movimiento para usarlo', 3, true);
+      if (!quiet) G.Spawner.say('Bond saved: learn another move to use it', 3, true);
       return;
     }
     // Se para el juego; en grupo, para todos hasta que cada uno elige (G.Coop.holdStart).
@@ -417,7 +417,7 @@ G.Game = (() => {
       G.Audio.sfx('legend');
       G.FX.ring(pl.x, pl.y, 8, 130, '#ff8ad8', 0.8, 6);
       G.FX.burst(pl.x, pl.y - pl.bodyH * 0.5, '#ffb3e6', 40, 240);
-      G.Spawner.say('¡Vínculo! ' + group.length + ' movimientos a la vez', 2.6, true);
+      G.Spawner.say('Bond! ' + group.length + ' moves at once', 2.6, true);
       if (state === 'choice') state = holdBy.length ? 'held' : 'playing';
       if (G.Coop.active) G.Coop.holdEnd();
     });
@@ -456,7 +456,7 @@ G.Game = (() => {
       openItem = null;
       if (got !== pl.item) {
         pl.equip(got);
-        G.Spawner.say('¡Llevas ' + G.Items.BY[got].name + '!', 2.6, true);
+        G.Spawner.say('Equipped: ' + G.Items.BY[got].name + '!', 2.6, true);
         G.Progress.event('item', { id: got });
       }
       if (!mine) { afterLevelUp(); return; }
@@ -465,7 +465,7 @@ G.Game = (() => {
       afterLevelUp();
     };
     if (!pl.item) { take(id); return; }
-    if (pl.item === id) { G.Spawner.say('Ya llevas ' + G.Items.BY[id].name, 2, true); return; }
+    if (pl.item === id) { G.Spawner.say('Already equipped: ' + G.Items.BY[id].name, 2, true); return; }
     // Se para el juego mientras eliges; en grupo, para todos (como con las
     // fusiones). Antes en grupo seguía y te pegaban mientras elegías.
     if (state === 'playing' || state === 'held') {
@@ -594,7 +594,7 @@ G.Game = (() => {
         try {
           G.UI.hideAll();
           quitRun();
-          G.UI.toast('El juego ha fallado: tu partida se ha guardado hasta aquí', 5000);
+          G.UI.toast('The game encountered an error. Your progress was saved up to this point.', 5000);
         } catch (e2) { console.error('[Game] no se pudo cerrar la partida:', e2); }
       }
     }

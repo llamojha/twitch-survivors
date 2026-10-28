@@ -88,7 +88,7 @@ G.Spawner = (() => {
     if (G.Events.golden) e.makeGolden();
     G.EnemyMgr.add(e);
     if (shiny) {
-      say('¡Una criatura rara ronda cerca: ' + e.name + '!', 3.4);
+      say('A rare creature is nearby: ' + e.name + '!', 3.4);
       G.Audio.sfx('shiny');
     }
     return e;
@@ -99,7 +99,7 @@ G.Spawner = (() => {
     const e = new G.Enemy(b, x, y, scaled(G.Enemies.bossScale(t), G.Coop.scaleHp(players.length) * (players.length > 1 ? 1.4 : 1)), true);
     if (rollShiny(b.dex)) e.makeShiny();
     G.EnemyMgr.add(e);
-    say('¡Apareció ' + e.name + '!', 3.2);
+    say(e.name + ' appeared!', 3.2);
     G.Camera.kick(1.1);
     G.Audio.sfx('boss');
     return e;
@@ -141,7 +141,7 @@ G.Spawner = (() => {
       const target = anchor();
       const n = Math.min(CAP - G.EnemyMgr.count, Math.round((14 + Math.floor(t / 22)) * G.Coop.scaleRate(players.length) * 0.4));
       for (let i = 0; i < n; i++) spawnOne(target, t, base + G.U.rand(-0.55, 0.55));
-      say('¡Se acerca una horda!', 2.2);
+      say('A horde is approaching!', 2.2);
       G.Audio.sfx('surge');
     }
   }

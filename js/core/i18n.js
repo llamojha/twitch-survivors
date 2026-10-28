@@ -1,7 +1,7 @@
-/* ============ i18n.js — idiomas (español / inglés) ============
- * El juego está escrito en español. Si el idioma es inglés, todo texto que
- * se enseña se traduce con el diccionario de js/data/lang-en.js, sin tener que
- * tocar cada pantalla:
+/* ============ i18n.js — English presentation adapter ============
+ * Some inherited source modules still use Spanish strings as stable lookup
+ * keys. Every player-visible string is translated to English through
+ * js/data/lang-en.js:
  *   - el DOM (menús, cartas, avisos...) con un MutationObserver,
  *   - el canvas (HUD, avisos, números) envolviendo fillText/strokeText,
  *   - confirm()/alert().
@@ -13,16 +13,11 @@
  *   3. trozos dentro de un texto más largo, sólo palabras enteras
  * Lo que escriben los jugadores (apodos) va marcado con translate="no".
  *
- * Idioma: el elegido en Ajustes; si no, /en/ en la dirección o el del navegador
- * (español si el navegador está en español, inglés en cualquier otro caso).
+ * Twitch Survivors is English-only. Browser locale and legacy saved language
+ * preferences never change the presentation language.
  */
 G.I18n = (() => {
-  const KEY = 'twitch-survivors.lang';
-  let saved = null;
-  try { saved = localStorage.getItem(KEY); } catch (e) { /* nada */ }
-  const byPath = /\/en(\/|$)/.test(location.pathname) ? 'en' : null;
-  const nav = ((navigator.languages && navigator.languages[0]) || navigator.language || 'es').toLowerCase();
-  const lang = saved === 'es' || saved === 'en' ? saved : byPath || (nav.startsWith('es') ? 'es' : 'en');
+  const lang = 'en';
   document.documentElement.lang = lang;
 
   const exact = new Map(), exactLow = new Map();
@@ -58,7 +53,7 @@ G.I18n = (() => {
 
   /** Traduce un texto (sin espacios de los lados) al idioma actual. */
   function t(s) {
-    if (lang === 'es' || !s || typeof s !== 'string') return s;
+    if (!s || typeof s !== 'string') return s;
     if (!/\p{L}/u.test(s)) return s;
     const c = cache.get(s);
     if (c !== undefined) return c;
@@ -126,7 +121,6 @@ G.I18n = (() => {
   }
 
   function startDom() {
-    if (lang === 'es') return;
     // Los enlaces a las páginas de la web, a su versión en inglés.
     const EN_LINKS = { 'guia/': 'en/guide/', 'heroes/': 'en/heroes/' };
     document.querySelectorAll('a[href]').forEach(a => { const h = a.getAttribute('href'); if (EN_LINKS[h]) a.setAttribute('href', EN_LINKS[h]); });
@@ -142,21 +136,16 @@ G.I18n = (() => {
   }
 
   // ---------------- canvas y ventanas del navegador ----------------
-  if (lang !== 'es') {
-    const P = CanvasRenderingContext2D.prototype;
-    for (const k of ['fillText', 'strokeText', 'measureText']) {
-      const orig = P[k];
-      P[k] = function (s, ...a) { return orig.call(this, typeof s === 'string' ? t(s) : s, ...a); };
-    }
-    const oc = window.confirm, oa = window.alert;
-    window.confirm = s => oc.call(window, t(s));
-    window.alert = s => oa.call(window, t(s));
+  const P = CanvasRenderingContext2D.prototype;
+  for (const k of ['fillText', 'strokeText', 'measureText']) {
+    const orig = P[k];
+    P[k] = function (s, ...a) { return orig.call(this, typeof s === 'string' ? t(s) : s, ...a); };
   }
+  const oc = window.confirm, oa = window.alert;
+  window.confirm = s => oc.call(window, t(s));
+  window.alert = s => oa.call(window, t(s));
 
-  function set(l) {
-    try { localStorage.setItem(KEY, l); } catch (e) { /* nada */ }
-    location.reload();
-  }
+  function set() { return lang; }
 
   return { lang, add, t, f, set, startDom, walk };
 })();

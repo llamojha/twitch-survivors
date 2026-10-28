@@ -40,7 +40,7 @@ G.SettingsUI = (() => {
   const IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const standalone = () => !!navigator.standalone || (window.matchMedia && matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches);
   function iosTip() { return IOS && !canFull() && !standalone(); }
-  const IOS_TIP = 'En iPhone, Safari no deja poner las webs a pantalla completa. Pulsa Compartir y luego "Añadir a pantalla de inicio": abriendo el juego desde ese icono se juega a pantalla completa.';
+  const IOS_TIP = 'On iPhone, Safari does not allow websites to enter fullscreen. Tap Share, then "Add to Home Screen", and open the game from that icon.';
   function toggleFull() {
     if (!canFull()) { if (iosTip()) G.UI.toast(IOS_TIP, 9000); return; }
     if (isFull()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
@@ -58,7 +58,7 @@ G.SettingsUI = (() => {
   function toggle(key, label, desc) {
     const on = !!G.Settings.get(key);
     return `<div class="set-row"><div class="grow"><b>${esc(label)}</b><small>${esc(desc)}</small></div>
-      <button class="btn small switch ${on ? 'gold' : ''}" data-k="${key}">${on ? 'Sí' : 'No'}</button></div>`;
+      <button class="btn small switch ${on ? 'gold' : ''}" data-k="${key}">${on ? 'Yes' : 'No'}</button></div>`;
   }
   function choice(key, opts) {
     const cur = G.Settings.get(key);
@@ -70,59 +70,56 @@ G.SettingsUI = (() => {
     const box = $('set-body');
     box.scrollTop = 0;
     if (tab === 'sound') {
-      box.innerHTML = section('Sonido') + '<div id="set-sound" class="sound-inline"></div>';
+      box.innerHTML = section('Sound') + '<div id="set-sound" class="sound-inline"></div>';
       G.UI.soundControls($('set-sound'));
     } else if (tab === 'gfx') {
-      const auto = ['baja', 'media', 'alta'][G.Settings.autoLevel];
-      box.innerHTML = section('Idioma', 'El juego se recarga al cambiarlo.')
-        + `<div class="chips set-chips" translate="no">${[['es', 'Español'], ['en', 'English']].map(([v, l]) =>
-             `<button class="chip ${G.I18n.lang === v ? 'on' : ''}" data-lang="${v}">${l}</button>`).join('')}</div>`
-        + section('Calidad', 'Cuántos efectos y partículas se dibujan. <b>Auto</b> la baja sola si el juego va a tirones (ahora: ' + auto + ').')
-        + choice('quality', [['auto', 'Auto'], ['high', 'Alta'], ['mid', 'Media'], ['low', 'Baja']])
-        + section('Pantalla')
-        + toggle('dmgNumbers', 'Números de daño', 'Los números que salen al golpear y al recibir daño.')
-        + toggle('calm', 'Menos sacudidas y destellos', 'La cámara tiembla menos y los fogonazos son suaves.')
-        + toggle('fps', 'Mostrar FPS', 'Fotogramas por segundo, en la esquina de abajo.')
-        + (canFull() ? `<div class="set-row"><div class="grow"><b>Pantalla completa</b><small>Sin barras del navegador.</small></div>
-             <button class="btn small" id="set-full">${isFull() ? 'Salir' : 'Activar'}</button></div>`
-           : iosTip() ? `<div class="set-row"><div class="grow"><b>Pantalla completa</b><small>${esc(IOS_TIP)}</small></div></div>` : '');
+      const auto = ['low', 'medium', 'high'][G.Settings.autoLevel];
+      box.innerHTML = section('Quality', 'Controls how many effects and particles are drawn. <b>Auto</b> lowers quality if the game starts stuttering (currently: ' + auto + ').')
+        + choice('quality', [['auto', 'Auto'], ['high', 'High'], ['mid', 'Medium'], ['low', 'Low']])
+        + section('Display')
+        + toggle('dmgNumbers', 'Damage numbers', 'Numbers shown when dealing and receiving damage.')
+        + toggle('calm', 'Reduced shake and flashes', 'Reduces camera shake and softens bright flashes.')
+        + toggle('fps', 'Show FPS', 'Frames per second, shown in the bottom corner.')
+        + (canFull() ? `<div class="set-row"><div class="grow"><b>Fullscreen</b><small>Hide browser controls.</small></div>
+             <button class="btn small" id="set-full">${isFull() ? 'Exit' : 'Enable'}</button></div>`
+           : iosTip() ? `<div class="set-row"><div class="grow"><b>Fullscreen</b><small>${esc(IOS_TIP)}</small></div></div>` : '');
     } else if (tab === 'ctl') {
-      box.innerHTML = section('En móvil o tablet')
-        + `<p class="sub">Pon el dedo en cualquier parte y arrastra para moverte: el joystick aparece donde tocas. Toca un ataque de abajo para cambiarlo y el botón de arriba a la derecha para pausar. Se juega en horizontal.</p>`
-        + `<div class="set-row"><div class="grow"><b>Tamaño del joystick</b><small>Cuánto hay que arrastrar el dedo.</small></div></div>`
-        + choice('stick', [[0.8, 'Pequeño'], [1, 'Normal'], [1.25, 'Grande']])
-        + section('En PC')
+      box.innerHTML = section('On mobile or tablet')
+        + `<p class="sub">Touch and drag anywhere to move; the joystick appears under your finger. Tap an attack at the bottom to switch it, and use the top-right button to pause. Play in landscape.</p>`
+        + `<div class="set-row"><div class="grow"><b>Joystick size</b><small>How far you need to drag.</small></div></div>`
+        + choice('stick', [[0.8, 'Small'], [1, 'Normal'], [1.25, 'Large']])
+        + section('On desktop')
         + `<div class="keys">
-             <div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> o flechas</div><span>moverse</span>
-             <div><kbd>1</kbd>–<kbd>4</kbd> o clic en el icono</div><span>elegir ataque</span>
-             <div><kbd>Q</kbd> / <kbd>E</kbd></div><span>ataque anterior / siguiente</span>
-             <div><kbd>Esc</kbd> o <kbd>P</kbd></div><span>pausa</span>
-             <div><kbd>1</kbd>–<kbd>3</kbd></div><span>elegir carta al subir de nivel</span>
+             <div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or arrows</div><span>move</span>
+             <div><kbd>1</kbd>–<kbd>4</kbd> or click an icon</div><span>choose attack</span>
+             <div><kbd>Q</kbd> / <kbd>E</kbd></div><span>previous / next attack</span>
+             <div><kbd>Esc</kbd> or <kbd>P</kbd></div><span>pause</span>
+             <div><kbd>1</kbd>–<kbd>3</kbd></div><span>choose a level-up card</span>
            </div>`;
     } else if (tab === 'acc') {
       renderAccount(box);
     } else {
-      box.innerHTML = `<div class="about-logo">Twitch Survivors</div><p class="sub center">Versión ${esc(VERSION)}</p>`
+      box.innerHTML = `<div class="about-logo">Twitch Survivors</div><p class="sub center">Version ${esc(VERSION)}</p>`
         + `<p class="sub">Local hackathon build with original fantasy presentation and no ads or purchases.</p>`
-        + section('Créditos')
+        + section('Credits')
         + `<ul class="credits">
              <li><b>Fantasy character tiles:</b> Kenney Tiny Dungeon (CC0).</li>
-             <li><b>Música y sonidos:</b> originales, generados por el propio juego.</li>
-             <li><b>Fuente:</b> Pixelify Sans (OFL).</li>
+             <li><b>Music and sound:</b> original and generated by the game.</li>
+             <li><b>Font:</b> Pixelify Sans (OFL).</li>
            </ul>`
         + `<div class="row wrap" style="justify-content:center;gap:8px">
-             ${window.PS_PAGES ? `<a class="btn small" href="${G.I18n.lang === 'en' ? 'en/guide/' : 'guia/'}" target="_blank">Guía y preguntas</a>
-             <a class="btn small" href="${G.I18n.lang === 'en' ? 'en/heroes/' : 'heroes/'}" target="_blank">Heroes</a>` : ''}
-             <button class="btn small" data-legal>Aviso legal y privacidad</button>
-             <a class="btn small" href="${REPO}" target="_blank" rel="noopener">Código (GitHub)</a>
+             ${window.PS_PAGES ? `<a class="btn small" href="en/guide/" target="_blank">Guide and FAQ</a>
+             <a class="btn small" href="en/heroes/" target="_blank">Heroes</a>` : ''}
+             <button class="btn small" data-legal>Legal notice and privacy</button>
+             <a class="btn small" href="${REPO}" target="_blank" rel="noopener">Source code (GitHub)</a>
            </div>`;
     }
     wire(box);
   }
 
   function renderAccount(box) {
-    box.innerHTML = section('Perfil local', 'El progreso se guarda sólo en este navegador.')
-      + `<p class="sub">${G.DB.storageOk ? 'Guardado local disponible.' : 'No se puede guardar: revisa el almacenamiento del navegador.'}</p>`;
+    box.innerHTML = section('Local profile', 'Progress is stored only in this browser.')
+      + `<p class="sub">${G.DB.storageOk ? 'Local storage is available.' : 'Progress cannot be saved. Check your browser storage settings.'}</p>`;
   }
 
   function wire(box) {
@@ -131,7 +128,6 @@ G.SettingsUI = (() => {
       b.onclick = () => { const v = b.dataset.v; G.Settings.set(b.dataset.k, isNaN(+v) ? v : +v); render(); };
     });
     const full = $('set-full'); if (full) full.onclick = toggleFull;
-    box.querySelectorAll('[data-lang]').forEach(b => { b.onclick = () => { if (b.dataset.lang !== G.I18n.lang) G.I18n.set(b.dataset.lang); }; });
     const lo = $('set-login'); if (lo) lo.onclick = () => { close(); leave(); };
     const out = $('set-logout'); if (out) out.onclick = () => { close(); leave(); };
     const del = $('set-delete');
@@ -142,7 +138,7 @@ G.SettingsUI = (() => {
       const r = await G.DB.deleteAccount(ok.pass);
       if (!r.ok) { $('set-msg').textContent = r.error; del.disabled = false; return; }
       close();
-      G.UI.toast('Cuenta borrada');
+      G.UI.toast('Account deleted');
       G.Audio.music(null);
       G.Flow.toLogin();
     };
@@ -150,7 +146,7 @@ G.SettingsUI = (() => {
 
   /** Cerrar sesión (si estás en una partida, se abandona). */
   function leave() {
-    if (G.DB.guest && !confirm('Eres invitado: se perderá todo el progreso. ¿Salir?')) return;
+    if (G.DB.guest && !confirm('You are playing as a guest. All progress will be lost. Leave anyway?')) return;
     if (G.Game.state !== 'ui') G.Game.quit && G.Game.quit();
     G.Audio.music(null);
     G.DB.logout().then(() => G.Flow.toLogin());
