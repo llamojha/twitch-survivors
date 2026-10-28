@@ -7,6 +7,7 @@
     "test": "node --test tests/*.test.js",
     "audit:assets": "node tools/audit-release-assets.js",
     "build": "node tools/build.js --sin-seo",
+    "build:preview": "node tools/build.js --sin-seo --mock-audience",
     "build:vercel": "npm run build && node tools/package-vercel.js",
     "build:test": "node tools/build.js --expose --sin-seo",
     "serve": "python3 -m http.server 4173 --bind 127.0.0.1"

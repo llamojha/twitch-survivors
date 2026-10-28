@@ -187,3 +187,23 @@ Increased the centered menu host portrait from 4× to 5×. Replaced the remainin
 Completed the presentation mapping for all 64 retained base attacks and all 59 evolved attacks. Save data, combat behavior, VFX lookup, and internal move IDs remain unchanged; only player-facing names were replaced.
 
 Validation: the mapping inventory reported zero missing base or evolved names; 28 Node tests, protected production build, and release asset audit passed. Chromium verified Blade Arc in the menu and live HUD with zero console errors. Screenshots: `docs/screenshots/larger-host-blade-arc.png` and `docs/screenshots/blade-arc-in-run.png`.
+
+## 2026-10-28 — original soundtrack and attack icon pass
+
+Replaced the seven inherited score definitions with an original Twitch Survivors soundtrack while retaining the MIT-licensed Web Audio synthesizer, stable runtime track keys, crossfades, sound settings, and autoplay handling. Channel Overture, Chatbound March, Moonlit Relay, Hypeforge, Raid Signal, Break the Seal, and Last Broadcast now cover the menu, three biomes, boss, rift, and finale without sampled audio or new external assets.
+
+Added bespoke code-drawn fantasy pixel icons for Blade Arc and all twelve audience attacks. The existing `move:<id>` interface remains stable; dormant retained moves keep the generic procedural fallback. Viewer attack icons now appear in the Pause roster and final contribution results.
+
+Validation: 34 Node tests passed, including score structure and complete release-icon coverage. The protected production build and release asset audit passed. Chromium measured a nonzero signal for every new theme after gesture unlock, recruited ten local viewers with ten distinct attack icons, and rendered the Pause roster without horizontal overflow at 1280×800 or 760×500. Console errors: zero; the expected autoplay warning occurred before the initial gesture. No files were staged, committed, pushed, merged, or deployed.
+
+## 2026-10-28 — English-only presentation
+
+Locked the MVP to English regardless of browser locale or any saved legacy language preference, removed the language selector, set English release metadata, and converted remaining composed gameplay messages that could bypass the inherited translation adapter. English now covers the boot flow, menus, settings, audience controls, upgrades, missions, run overlays, dynamic events, rifts, and finale presentation. The adapter remains as a compatibility layer for inherited Spanish source keys; it no longer represents a selectable second language.
+
+Validation: 35 Node tests, the protected 62-script production build, and the release asset audit passed. Chromium preloaded the retired Spanish preference and still rendered the title, main menu, Audience, Survivor Forge, Bounty Board, all Settings tabs, and an active Pause screen in English. The protected build logged zero errors and had no page overflow at 760×500. No files were staged, committed, pushed, merged, or deployed.
+
+## 2026-10-28 — preview-only mock audience flag
+
+Added a fail-closed build-time `mockAudience` feature flag. Vercel preview builds enable Local Test automatically through `VERCEL_ENV=preview`; production, local source, and ordinary builds default off. `TS_ENABLE_MOCK_AUDIENCE` provides an explicit build override, and invalid values fail the build. When off, the production builder omits the mock provider module, the game does not create or connect it, Local Test and the in-run `+ viewer` control stay hidden, and the queue uses Twitch-only copy. Twitch connection and the shared audience session remain unchanged.
+
+Validation: 38 Node tests, the 63-script protected preview build, and the 62-script protected production build passed, as did the release asset audit. Chromium verified preview-on and production-off variants: preview showed and auto-connected Local Test; production hid all mock controls, started disconnected, retained Twitch setup, and logged zero errors. The repository was left with the generated production/default variant (`mockAudience=off`). No files were staged, committed, pushed, merged, or deployed.

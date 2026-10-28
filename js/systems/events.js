@@ -82,9 +82,9 @@ G.Events = (() => {
 
   function announce() {
     if (!cur) return;
-    if (cur.id === 'horde') say('¡Horda de tipo ' + G.U.TYPE_NAME[cur.type] + '!', 3, G.U.TYPE_COLOR[cur.type]);
-    else if (cur.id === 'gold') say('¡Hora dorada! Doble de experiencia', 3, '#ffd23f');
-    else if (lost) say('¡Un ' + lost.name + ' se ha perdido! Búscalo y llévalo a la marca', 3.4, '#7dffb0');
+    if (cur.id === 'horde') say(G.U.TYPE_NAME[cur.type] + ' horde!', 3, G.U.TYPE_COLOR[cur.type]);
+    else if (cur.id === 'gold') say('Golden hour! Double experience', 3, '#ffd23f');
+    else if (lost) say('A lost ' + lost.name + ' needs help! Guide it to the marker', 3.4, '#7dffb0');
     G.Audio.sfx(cur.id === 'gold' ? 'shiny' : 'surge');
   }
 
@@ -118,8 +118,8 @@ G.Events = (() => {
       e.life = THIEF_LIFE;
       G.EnemyMgr.add(e);
       G.FX.ring(x, y, 4, 40, '#ffd23f', 0.5, 3);
-      G.Spawner.say(gold ? '¡Un ' + mon.name + ' con un alijo de coronas! ¡Atrápalo antes de que huya!'
-                         : '¡Un ' + mon.name + ' cargado de monedas! ¡Atrápalo antes de que huya!', 3.2);
+      G.Spawner.say(gold ? 'A ' + mon.name + ' is carrying a crown cache! Catch it before it escapes!'
+                         : 'A ' + mon.name + ' is carrying coins! Catch it before it escapes!', 3.2);
       G.Audio.sfx('shiny');
       return;
     }
@@ -163,7 +163,7 @@ G.Events = (() => {
 
     if (L.state === 'wait') {
       const p = players.find(o => !o.dead && G.U.dist2(o.x, o.y, L.x, L.y) < (o.r + L.r + 18) ** 2);
-      if (p) { L.state = 'follow'; L.follow = p; say('¡' + L.name + ' te sigue! Llévalo a la marca verde', 3, '#7dffb0'); G.Audio.sfx('confirm'); }
+      if (p) { L.state = 'follow'; L.follow = p; say(L.name + ' is following you! Guide it to the green marker', 3, '#7dffb0'); G.Audio.sfx('confirm'); }
       L.moving = false;
     } else {
       const p = L.follow && !L.follow.dead ? L.follow : players.find(o => !o.dead) || L.follow;
@@ -188,11 +188,11 @@ G.Events = (() => {
         L.hp -= Math.min(30, hits.reduce((a, e) => a + 4 + e.dmg * 0.12, 0));
         L.flash = 0.1;
         G.FX.burst(L.x, L.y - 10, '#ff5f6d', 4, 60);
-        if (L.hp <= 0) return gone('¡' + L.name + ' se ha asustado y ha huido…!');
+        if (L.hp <= 0) return gone(L.name + ' got scared and ran away…');
       }
     }
     if (L.flash > 0) L.flash -= dt;
-    if (L.t > LOST_TIME) return gone(L.name + ' se ha cansado de esperar y se ha ido…');
+    if (L.t > LOST_TIME) return gone(L.name + ' got tired of waiting and left…');
 
     if (G.Coop.isHost && (L.netT -= dt) <= 0) {
       L.netT = 0.1;
@@ -219,7 +219,7 @@ G.Events = (() => {
     G.FX.burst(lost ? lost.tx : pl.x, lost ? lost.ty - 10 : pl.y, '#7dffb0', 24, 180);
     G.Audio.sfx('legend');
     if (grant && G.onRescue) G.onRescue(dex, name);
-    else say('¡Has llevado a ' + name + ' a casa! Te lo agradece', 3.2, '#7dffb0');
+    else say('You brought ' + name + ' home! It thanks you', 3.2, '#7dffb0');
   }
 
   function gone(msg) {

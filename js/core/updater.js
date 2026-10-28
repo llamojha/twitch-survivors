@@ -58,7 +58,7 @@ G.Updater = (() => {
     const tick = () => {
       if (!safe()) { counting = false; G.UI.toast('', 1); return; }     // ha empezado una partida: se espera
       if (n <= 0) { reload(); return; }
-      G.UI.toast('Hay una versión nueva del juego: actualizando en ' + n + ' s…', 1500);
+      G.UI.toast('A new version is available. Updating in ' + n + 's…', 1500);
       n--;
       setTimeout(tick, 1000);
     };

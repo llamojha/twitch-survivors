@@ -77,6 +77,7 @@ New browser modules should follow the upstream IIFE convention:
 - [x] Disable Firebase startup, accounts, friends, rankings, donations, moderation, and online co-op in the MVP shell without removing the underlying combat/world systems.
 - [x] Keep local streamer progression and settings under Twitch Survivors-specific storage keys so they cannot overwrite PokéSurvivor saves.
 - [x] Rename visible project identity and metadata to Twitch Survivors while retaining temporary Pokémon gameplay assets until the final art pass.
+- [x] Lock the MVP to English, remove language switching, and verify legacy Spanish preferences cannot change the presentation.
 - [x] Make Play start the default local run without requiring account setup or the personality test.
 
 **Acceptance:** The correct game works locally without cloud configuration, external service errors, or touching upstream save keys; its visual quality and core loop remain intact.
@@ -183,6 +184,7 @@ Local production-build capacity evidence from 2026-10-27 sets the supported MVP 
 - [x] Capture final screenshots only after the actual converted game passes visual regression.
 - [x] Refocus the shell on Play and Audience with a Twitch-purple fantasy palette and new sword/audience/rune/quest icons.
 - [x] Restyle the menu and start-screen wordmarks with bright Twitch-purple letters, a deep-purple pixel outline, and a compact readability shadow.
+- [x] Replace the inherited score data with an original procedural Twitch Survivors soundtrack and give every release-reachable host/viewer attack a bespoke fantasy pixel icon.
 - [x] Rebuild permanent upgrades as the Survivor Forge with thirteen fantasy icons, four visual power schools, and save-compatible upgrade IDs.
 - [x] Remove Recruit/Gacha and ticket balances from the primary MVP UI; convert reachable ticket drops and mission rewards into crowns.
 - [x] Reduce Audience to a compact lobby with a one-row local simulator, collapsed Twitch setup, recruitment mode, status, and short queue.
@@ -219,6 +221,18 @@ Completed locally: the release now uses the documented pixel-fantasy direction, 
 **Acceptance:** The player controls one simple neutral host; all varied combat roles come from joined audience viewers, and no collection or character-selection UI is reachable.
 
 **Deferred post-MVP TODO:** Design a coin-funded character unlock system only if multiple playable hosts return; keep the selector and collection disabled until that design is approved.
+
+### Task 12 — Gate local mock audience tools by deployment environment
+
+**Files:** `tools/release-features.js`, `tools/build.js`, `package.json`, `dev.html`, `js/core/features.js`, `js/ui/audience-ui.js`, `js/main.js`, `tests/release-features.test.js`, `tests/presentation.test.js`
+
+- [x] Resolve one `mockAudience` build flag from `TS_ENABLE_MOCK_AUDIENCE`, defaulting on for Vercel preview builds and off everywhere else.
+- [x] Stamp only the resolved boolean into generated HTML, and omit the mock provider module from default production bundles; do not expose deployment environment details to the browser.
+- [x] When disabled, hide local simulator controls, skip mock-provider creation/connection, and remove the in-run mock join control.
+- [x] Keep Twitch connection, recruitment modes, queues, and contribution behavior unchanged.
+- [x] Verify preview-on and production-off builds through focused tests and real-browser checks; leave generated release artifacts in production-default mode.
+
+**Acceptance:** Vercel previews expose repeatable local audience simulation automatically. Production/default builds expose Twitch only and cannot create mock viewers through the UI.
 
 ## Explicit exclusions for the MVP
 

@@ -44,7 +44,7 @@ G.RunUI = (() => {
       const el = document.createElement('div');
       el.className = 'card';
       const tag = c.type === 'new'
-        ? `<span class="tag-chip" style="background:${c.color}">Nuevo · ${c.tag}</span>`
+        ? `<span class="tag-chip" style="background:${c.color}">New · ${c.tag}</span>`
         : c.type === 'up' || c.type === 'evo'
           ? `<span class="tag-chip" style="background:${c.color}">${c.tag}</span>`
           : `<span class="tag-chip" style="background:${c.color === '#ffd23f' ? '#ffd23f' : '#9fb1c9'}">${c.tag}</span>`;
@@ -76,11 +76,11 @@ G.RunUI = (() => {
   function setWaiting(names) {
     const me = G.Social.me ? G.Social.me.name : '';
     const others = names.filter(n => n !== me);
-    const list = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' y ' + a[a.length - 1] : a[0];
+    const list = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1] : a[0];
     $('lvl-wait').textContent = !names.length ? ''
-      : !others.length ? 'Elige tu carta'
-      : names.includes(me) ? 'Faltan por elegir: ' + list([...others, 'tú'])
-      : 'Esperando a ' + list(others) + '…';
+      : !others.length ? 'Choose your card'
+      : names.includes(me) ? 'Still choosing: ' + list([...others, 'you'])
+      : 'Waiting for ' + list(others) + '…';
   }
 
   function closeLevelUp() {
@@ -103,27 +103,27 @@ G.RunUI = (() => {
   }
 
   function showOver(r, onBack) {
-    $('over-title').textContent = r.dead ? 'Has caído…' : 'Run terminada';
+    $('over-title').textContent = r.dead ? 'You fell…' : 'Run complete';
     $('over-stats').innerHTML = `
-      <div><span>Tiempo</span><b>${G.U.mmss(r.time)}</b></div>
-      <div><span>Nivel</span><b>${r.level}</b></div>
-      <div><span>Derrotados</span><b>${r.kills}</b></div>
-      <div><span>Jefes</span><b>${r.bosses}</b></div>
-      ${r.judge ? `<div style="grid-column:1/-1"><span>Ante Tirano del Rift</span><b class="gold">${G.U.mmss(r.judge.time)} · ${r.judge.bosses} ${r.judge.bosses === 1 ? 'guardián' : 'guardianes'}</b></div>` : ''}
+      <div><span>Time</span><b>${G.U.mmss(r.time)}</b></div>
+      <div><span>Level</span><b>${r.level}</b></div>
+      <div><span>Defeated</span><b>${r.kills}</b></div>
+      <div><span>Bosses</span><b>${r.bosses}</b></div>
+      ${r.judge ? `<div style="grid-column:1/-1"><span>Against the Rift Tyrant</span><b class="gold">${G.U.mmss(r.judge.time)} · ${r.judge.bosses} ${r.judge.bosses === 1 ? 'guardian' : 'guardians'}</b></div>` : ''}
       <div style="grid-column:1/-1"><span>Crowns earned</span>
         <b class="gold"><span class="coin"></span> +${r.coins}</b>
         <div style="font-size:12px;color:var(--muted)">${r.breakdown}</div></div>
-      <div style="grid-column:1/-1"><span>Movimientos</span><b style="font-size:15px">
-        ${r.moves.map(m => `${G.Icons.html('move:' + m.id, 16)} ${m.name} Nv.${m.lvl}`).join(' · ') || '—'}</b></div>
+      <div style="grid-column:1/-1"><span>Moves</span><b style="font-size:15px">
+        ${r.moves.map(m => `${G.Icons.html('move:' + m.id, 16)} ${m.name} Lv.${m.lvl}`).join(' · ') || '—'}</b></div>
       ${r.caught && r.caught.length ? `<div style="grid-column:1/-1" class="caught"><span>${G.Icons.html('shiny', 12)} Shinies conseguidos</span>
         <div class="caught-row" id="over-caught"></div></div>` : ''}
       ${r.audience && r.audience.length ? `<div class="aud-results" style="grid-column:1/-1"><span>Audience contributions</span>
-        <div>${r.audience.map((v, i) => `<p><b>${i + 1}. ${escapeHtml(v.displayName)}</b><small>${escapeHtml(v.role)} · ${Math.round(v.damage)} damage · ${Number(v.dps || 0).toFixed(1)} DPS · ${v.kills} kills</small></p>`).join('')}</div></div>` : ''}
-      ${r.record ? '<div style="grid-column:1/-1;text-align:center" class="gold">¡Nuevo récord de tiempo!</div>' : ''}
+        <div>${r.audience.map((v, i) => `<p><b>${G.Icons.html('move:' + v.moveId, 16)} ${i + 1}. ${escapeHtml(v.displayName)}</b><small>${escapeHtml(v.role)} · ${Math.round(v.damage)} damage · ${Number(v.dps || 0).toFixed(1)} DPS · ${v.kills} kills</small></p>`).join('')}</div></div>` : ''}
+      ${r.record ? '<div style="grid-column:1/-1;text-align:center" class="gold">New time record!</div>' : ''}
       ${askSupport(r) ? `<div class="support-ask" id="over-ask" style="grid-column:1/-1">
-        <button class="x" type="button" aria-label="Cerrar">×</button>
-        <p>¿Te está gustando Twitch Survivors? Si quieres, puedes ayudar a mantener el proyecto en línea.</p>
-        <a class="btn small gold" href="${G.Funding.url}" target="_blank" rel="noopener">${G.Icons.html('heart', 14)} Apoyar en Ko-fi</a>
+        <button class="x" type="button" aria-label="Close">×</button>
+        <p>Enjoying Twitch Survivors? You can help keep the project online.</p>
+        <a class="btn small gold" href="${G.Funding.url}" target="_blank" rel="noopener">${G.Icons.html('heart', 14)} Support on Ko-fi</a>
       </div>` : ''}`;
     const ask = $('over-ask');
     if (ask) ask.querySelector('.x').onclick = () => ask.remove();
@@ -133,7 +133,7 @@ G.RunUI = (() => {
       for (const c of r.caught) {
         const w = document.createElement('div');
         w.appendChild(G.UI.spriteCanvas(c.dex, 90, 72, { shiny: true, lively: true, scale: 2 }));
-        w.insertAdjacentHTML('beforeend', `<small>${G.DEX_BY[c.dex].name}${c.isNew ? ' · ¡nuevo!' : ''}</small>`);
+        w.insertAdjacentHTML('beforeend', `<small>${G.DEX_BY[c.dex].name}${c.isNew ? ' · new!' : ''}</small>`);
         row.appendChild(w);
       }
     }
@@ -242,7 +242,7 @@ G.RunUI = (() => {
     $('pause-audience-summary').textContent = `${followers.length} viewers activos`;
     $('pause-followers').innerHTML = followers.length
       ? followers.map(v => `<div class="pause-follower">
-          <span><b>${escapeHtml(v.displayName)}</b><small>${escapeHtml(v.role)}</small></span>
+          <span class="pause-follower-name">${G.Icons.html('move:' + v.moveId, 20, 'pause-attack-icon')}<span><b>${escapeHtml(v.displayName)}</b><small>${escapeHtml(v.role)}</small></span></span>
           <strong>${Math.round(v.damage)}</strong><strong>${v.dps.toFixed(1)}</strong><strong>${v.kills}</strong>
         </div>`).join('')
       : '<p class="pause-followers-empty">Aún no hay viewers reclutados.</p>';
