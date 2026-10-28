@@ -127,6 +127,7 @@ select { font: inherit; color: var(--ink); background: #13295e; border: 2px soli
 .pause-followers { max-height: 210px; overflow-y: auto; }
 .pause-follower { padding: 7px 8px; border-top: 1px solid rgba(217,200,255,.18); text-align: right; }
 .pause-follower > span { min-width: 0; text-align: left; }.pause-follower b, .pause-follower small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pause-follower-name { display: flex; align-items: center; gap: 7px; }.pause-follower-name > span { min-width: 0; }.pause-attack-icon { flex: 0 0 auto; }
 .pause-follower b { color: #fff; }.pause-follower small { color: var(--muted); font-size: 11px; }.pause-follower strong { color: #fff; font-size: 14px; }
 .pause-followers-empty { margin: 8px; color: var(--muted); text-align: center; }
 @media (max-width: 560px) { .pause-followers-head, .pause-follower { grid-template-columns: minmax(110px, 1fr) repeat(3, 48px); gap: 4px; } }

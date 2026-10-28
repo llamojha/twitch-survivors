@@ -21,15 +21,18 @@ Fork `JPTER78/pokesurvivor` at MIT revision `b29708900da26b34e70d2dc07ad1659a719
 | D06 | Slimelord-inspired model: recruit a viewer companion carrying a skill. This replaces the initial assumption that half of viewers are player-attached skills. |
 | D07 | Default recruitment is level-based; a streamer-controlled Join all mode is also required. |
 | D08 | Viewer roles and contribution statistics reset each run; streamer progression persists. |
-| D09 | Play starts immediately with fixed host survivor Arcblade on the default map. The host has no affinity and keeps one neutral Tackle attack. |
+| D09 | Play starts immediately with the fixed streamer-named host survivor on the default map. The host has no affinity and keeps one neutral Blade Arc attack. |
 | D10 | Replace the current title illustration with an actual gameplay screenshot in the final presentation pass. |
-| D11 | Both input providers are required. Live Twitch `!join` worked on the superseded prototype; port it early and reverify it on the correct fork while keeping mocks available for repeatable development. |
+| D11 | Both input providers are required. Live Twitch `!join` worked on the superseded prototype; port it early and reverify it on the correct fork while keeping preview-gated mocks available for repeatable development. |
 | D12 | The final art pass must replace terrain and every visible Pokémon player, companion, enemy and boss. Skill visuals may remain only when their provenance permits redistribution and they contain no Pokémon-specific identity. |
 | D13 | The intended foundation is `JPTER78/pokesurvivor`, pinned at MIT commit `b297089`. The existing `giovanneluna/poke-survivors` implementation is retained only as a behavioral prototype and migration reference. |
 | D14 | Match the correct upstream's vanilla JavaScript, Canvas 2D, and `window.G` module architecture. Do not introduce Phaser/TypeScript/Vite during the rework. |
 | D15 | Exclude Firebase accounts, rankings, donations, moderation, and online co-op from the hackathon MVP. Preserve local streamer progression. |
-| D16 | Make the shell audience-first: remove Recruit/Gacha and tickets from primary presentation, use fantasy runes/icons, keep Local and Twitch inputs, and make Audience a compact lobby. |
+| D16 | Make the shell audience-first: remove Recruit/Gacha and tickets from primary presentation, use fantasy runes/icons, keep Twitch input plus preview-gated Local simulation, and make Audience a compact lobby. |
 | D17 | Disable host-character collection, switching, shiny/rarity presentation, and coin unlocking for the MVP. Combat variety comes from audience viewers; a coin-funded multi-host system is deferred. |
+| D18 | Ship an original code-sequenced Twitch Survivors soundtrack and distinct fantasy icons for the host attack and every audience role attack. No external music files are required. |
+| D19 | The MVP ships in English only. Ignore browser and saved language preferences, remove the language selector, and keep one English presentation path across menus, gameplay, audience controls, and release metadata. |
+| D20 | Local mock audience controls are a preview feature. Enable them automatically for Vercel preview builds and keep them off by default in production, local source, and ordinary release builds. |
 
 ## 3. Scope
 

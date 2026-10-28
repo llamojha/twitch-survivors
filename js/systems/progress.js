@@ -183,7 +183,7 @@ G.Progress = (() => {
       if (a.value(s) < a.goal) continue;
       s.ach[a.id] = Date.now();
       grant(a.reward);
-      notify('¡Hito: ' + a.name + '!', a.title ? 'Nuevo título: ' + a.title : '', a);
+      notify('Milestone: ' + a.name + '!', a.title ? 'New title: ' + a.title : '', a);
     }
   }
 

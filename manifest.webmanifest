@@ -2,7 +2,7 @@
   "name": "Twitch Survivors",
   "short_name": "Twitch Survivors",
   "description": "Survive the hordes with your audience.",
-  "lang": "es",
+  "lang": "en",
   "start_url": "./",
   "scope": "./",
   "display": "fullscreen",
